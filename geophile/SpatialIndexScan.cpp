@@ -9,14 +9,15 @@
 
 using namespace geophile;
 
-void SpatialIndexScan::find(Z z)
+template <typename SOR>
+void SpatialIndexScan<SOR>::find(Z z)
 {
     if (!_cursor) {
         _cursor = _index->cursor();
     }
     int64_t zhi = z.hi();
     _cursor->goTo(SpatialObjectKey(z));
-    Record record = _cursor->next();
+    Record<SOR> record = _cursor->next();
     while (!record.eof() && record.key().z().asInteger() < zhi) {
         SpatialObject* spatial_object = record.spatialObject();
         if (_filter->overlap(_query_object, spatial_object)) {
@@ -31,15 +32,17 @@ void SpatialIndexScan::find(Z z)
     }
 }
 
-SpatialIndexScan::~SpatialIndexScan()
+template <typename SOR>
+SpatialIndexScan<SOR>::~SpatialIndexScan()
 {
     delete _cursor;
 }
 
-SpatialIndexScan::SpatialIndexScan(OrderedIndex* index, 
-                                   const SpatialObject* query_object,
-                                   const SpatialIndexFilter* filter, 
-                                   SpatialObjectArray* output)
+template <typename SOR>
+SpatialIndexScan<SOR>::SpatialIndexScan(OrderedIndex<SOR>* index, 
+                                        const SpatialObject* query_object,
+                                        const SpatialIndexFilter* filter, 
+                                        SpatialObjectArray* output)
     : _index(index),
       _query_object(query_object),
       _filter(filter),

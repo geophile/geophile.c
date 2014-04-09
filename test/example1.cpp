@@ -65,12 +65,13 @@ static Space* createSpace()
     return space;
 }
 
-static OrderedIndex* createIndex()
+static OrderedIndex<SpatialObject*>* createIndex()
 {
-    return new RecordArray(&spatial_object_types, N_POINTS);
+    return new RecordArray<SpatialObject*>(&spatial_object_types, N_POINTS);
 }
 
-static void loadRandomPoints(SpatialIndex* spatial_index, SessionMemory* memory)
+static void loadRandomPoints(SpatialIndex<SpatialObject*>* spatial_index, 
+                             SessionMemory* memory)
 {
     srand(419);
     stopwatch.reset();
@@ -89,7 +90,7 @@ static void loadRandomPoints(SpatialIndex* spatial_index, SessionMemory* memory)
            N_POINTS, sec, N_POINTS / sec);
 }
 
-static void runQueries(SpatialIndex* spatial_index, SessionMemory* memory)
+static void runQueries(SpatialIndex<SpatialObject*>* spatial_index, SessionMemory* memory)
 {
     // Select query size based on the desired result size. Use square queries.
     uint32_t x_width = 
@@ -131,8 +132,9 @@ int main(int32_t argc, const char** argv)
 {
     setup();
     Space* space = createSpace();
-    OrderedIndex* index = createIndex();
-    SpatialIndex* spatial_index = new SpatialIndex(space, index);
+    OrderedIndex<SpatialObject*>* index = createIndex();
+    SpatialIndex<SpatialObject*>* spatial_index = 
+        new SpatialIndex<SpatialObject*>(space, index);
     SessionMemory memory;
     loadRandomPoints(spatial_index, &memory);
     runQueries(spatial_index, &memory);

@@ -18,7 +18,6 @@ namespace geophile
     class SpatialObjectArray
     {
         friend class SessionMemory;
-        friend class SpatialIndexScan;
 
     public:
         /*

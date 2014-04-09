@@ -9,12 +9,14 @@
 
 using namespace geophile;
 
-const Space* SpatialIndex::space() const
+template <typename SOR>
+const Space* SpatialIndex<SOR>::space() const
 {
     return _space;
 }
 
-void SpatialIndex::add(const SpatialObject* spatial_object, SessionMemory* memory)
+template <typename SOR>
+void SpatialIndex<SOR>::add(const SpatialObject* spatial_object, SessionMemory* memory)
 {
     GEOPHILE_ASSERT(spatial_object->id() != SpatialObject::UNINITIALIZED_ID);
     ZArray* zs = memory->zArray();
@@ -25,31 +27,35 @@ void SpatialIndex::add(const SpatialObject* spatial_object, SessionMemory* memor
     }
 }
 
-int32_t SpatialIndex::remove(const SpatialObject& spatial_object, SessionMemory* memory)
+template <typename SOR>
+int32_t SpatialIndex<SOR>::remove(const SpatialObject& spatial_object, SessionMemory* memory)
 {
     // TBD
     GEOPHILE_ASSERT(false); 
     return false;
 }
 
-void SpatialIndex::freeze()
+template <typename SOR>
+void SpatialIndex<SOR>::freeze()
 {
     _index->freeze();
 }
 
-SpatialIndexScan* SpatialIndex::newScan(const SpatialObject* query_object,
-                                        const SpatialIndexFilter* filter, 
-                                        SessionMemory* memory) const
+template <typename SOR>
+SpatialIndexScan<SOR>* SpatialIndex<SOR>::newScan(const SpatialObject* query_object,
+                                                  const SpatialIndexFilter* filter, 
+                                                  SessionMemory* memory) const
 {
-    return new SpatialIndexScan(_index, query_object, filter, memory->output());
+    return new SpatialIndexScan<SOR>(_index, query_object, filter, memory->output());
 }
 
-void SpatialIndex::findOverlapping(const SpatialObject* query_object, 
-                                   const SpatialIndexFilter* filter,
-                                   SessionMemory* memory) const
+template <typename SOR>
+void SpatialIndex<SOR>::findOverlapping(const SpatialObject* query_object, 
+                                        const SpatialIndexFilter* filter,
+                                        SessionMemory* memory) const
 {
     _space->decompose(query_object, query_object->maxZ(), memory);
-    SpatialIndexScan* scan = newScan(query_object, filter, memory);
+    SpatialIndexScan<SOR>* scan = newScan(query_object, filter, memory);
     ZArray* zs = memory->zArray();
     for (uint32_t i = 0; i < zs->length(); i++) {
         scan->find(zs->at(i));
@@ -57,7 +63,8 @@ void SpatialIndex::findOverlapping(const SpatialObject* query_object,
     delete scan;
 }
 
-SpatialIndex::SpatialIndex(const Space* space, OrderedIndex* index)
+template <typename SOR>
+SpatialIndex<SOR>::SpatialIndex(const Space* space, OrderedIndex<SOR>* index)
     : _space(space),
       _index(index)
 {}

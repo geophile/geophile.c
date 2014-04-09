@@ -11,8 +11,6 @@ namespace geophile
 
     class SpatialObjectTypes
     {
-        friend class OrderedIndex;
-        
     public:
         /*
          * Register a SpatialObject constructor with a user-supplied type id.
@@ -21,7 +19,7 @@ namespace geophile
         ~SpatialObjectTypes();
         SpatialObjectTypes();
 
-    private:
+    public: // Needed by SpatialIndex. friend class declarations and templates don't play nicely.
         SpatialObject* newSpatialObject(uint32_t type_id) const;
         static void initializeConstructors(SpatialObjectConstructor* array, uint32_t n);
 

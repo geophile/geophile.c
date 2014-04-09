@@ -6,7 +6,7 @@
 
 namespace geophile
 {
-    class Cursor;
+    template <typename SOR> class Cursor;
     class SpatialObject;
 
     /*
@@ -23,6 +23,7 @@ namespace geophile
      * be called. Then, access to OrderedIndex contents is
      * accomplished using a Cursor, obtained by cursor().
      */
+    template <typename SOR> // SOR: Spatial Object Reference
     class OrderedIndex
     {
     public:
@@ -47,7 +48,7 @@ namespace geophile
          * Return a Cursor object, which can be used for retrieval
          * from this OrderedIndex..
          */
-        virtual Cursor* cursor() = 0;
+        virtual Cursor<SOR>* cursor() = 0;
         /*
          * Destructor
          */

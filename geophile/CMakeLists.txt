@@ -11,8 +11,6 @@ add_library(geophile SHARED
   RegionQueue.cpp
   SessionMemory.cpp
   Space.cpp
-  SpatialIndex.cpp
-  SpatialIndexScan.cpp
   SpatialObjectArray.cpp
   SpatialObjectTypes.cpp
   ZArray.cpp)

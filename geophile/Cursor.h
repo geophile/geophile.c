@@ -20,13 +20,14 @@ namespace geophile
         DONE
     } CursorState;
 
+    template <typename SOR> // SOR: Spatial Object Reference
     class Cursor
     {
     public:
 
-        virtual Record next() = 0;
+        virtual Record<SOR> next() = 0;
 
-        virtual Record previous() = 0;
+        virtual Record<SOR> previous() = 0;
 
         virtual void goTo(const SpatialObjectKey& key) = 0;
 
@@ -39,7 +40,7 @@ namespace geophile
         ~Cursor()
         {}
 
-        const Record& current()
+        const Record<SOR>& current()
         {
             return _current;
         }
@@ -51,7 +52,7 @@ namespace geophile
             _current.set(z, spatial_object);
         }
 
-        void current(const Record& record)
+        void current(const Record<SOR>& record)
         {
             _current = record;
         }
@@ -71,7 +72,7 @@ namespace geophile
         {}
 
     private:
-        Record _current;
+        Record<SOR> _current;
         CursorState _state;
     };
 }

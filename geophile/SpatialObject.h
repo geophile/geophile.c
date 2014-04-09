@@ -29,4 +29,8 @@ namespace geophile
     };
 }
 
+// So that users of SpatialObjects can use SpatialObject* as a spatial
+// object reference.
+#include "SOR.h"
+
 #endif

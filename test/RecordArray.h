@@ -4,22 +4,27 @@
 #include "OrderedIndex.h"
 #include "Record.h"
 #include "ByteBuffer.h"
+#include "ByteBufferOverflowException.h"
 #include "Cursor.h"
+#include "RecordArray.h"
+#include "SpatialObjectTypes.h"
 
 namespace geophile
 {
     class SpatialObjectKey;
     class SpatialObjectTypes;
 
-    class RecordArray : public OrderedIndex
+    template <typename SOR> // SOR: Spatial Object Reference
+    class RecordArray : public OrderedIndex<SOR>
     {
     public:
         // Index
         virtual void add(Z z, const SpatialObject* spatial_object);
         virtual int32_t remove(Z z, int64_t soid);
         virtual void freeze();
-        virtual Cursor* cursor();
+        virtual Cursor<SOR>* cursor();
         virtual ~RecordArray();
+
         // RecordArray
         // If return value is negative, _start_key is missing, 
         // and insert position is -returnvalue - 1.
@@ -27,14 +32,14 @@ namespace geophile
                          int32_t forward_move, 
                          int32_t include_key) const;
         uint32_t nRecords() const;
-        Record at(int32_t position) const;
+        Record<SOR> at(int32_t position) const;
         SpatialObject* copySpatialObject(const SpatialObject* spatial_object);
         RecordArray(const SpatialObjectTypes* spatial_object_types, uint32_t capacity);
-        
+       
     private:
         // serialize and deserialize use _buffer (which is why this class
         // is not threadsafe).
-        void serialize(const SpatialObject* spatial_object);
+        void serialize(const SpatialObject* spatial_object);        
         SpatialObject* deserialize();
         void growBuffer();
         
@@ -47,29 +52,33 @@ namespace geophile
     private:
         uint32_t _capacity;
         int32_t _n;
-        Record* _records;
+        Record<SOR>* _records;
         uint32_t _buffer_size;
         byte* _buffer;
     };
 
-    class RecordArrayCursor : public Cursor
+    template <typename SOR>
+    class RecordArrayCursor : public Cursor<SOR>
     {
     public:
-        virtual Record next();
-        virtual Record previous();
+        virtual Record<SOR> next();
+        virtual Record<SOR> previous();
         virtual void goTo(const SpatialObjectKey& key);
-        RecordArrayCursor(RecordArray& record_array);
+        RecordArrayCursor(RecordArray<SOR>& record_array);
         
     private:
-        Record neighbor(int32_t forward_move);
+        Record<SOR> neighbor(int32_t forward_move);
         void startIteration(int32_t forward_move, int32_t include_start_key);
         
     private:
-        RecordArray& _record_array;
+        RecordArray<SOR>& _record_array;
         int32_t _position;
         SpatialObjectKey _start_at;
         int32_t _forward;
     };
 }
+
+// So that the functions can be instantiated
+#include "RecordArray.cpp"
 
 #endif

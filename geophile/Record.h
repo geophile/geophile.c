@@ -9,10 +9,11 @@ namespace geophile
 {
     class SpatialObject;
 
+    template <typename SOR> // SOR: Spatial Object Reference
     class Record
     {
     public:
-        Record operator=(const Record& record)
+        Record<SOR> operator=(const Record<SOR>& record)
         {
             if (record.eof()) {
                 setEOF();
@@ -27,46 +28,43 @@ namespace geophile
             return _key;
         }
 
-        SpatialObject* spatialObject() const
+        SOR spatialObject() const
         {
-            return _spatial_object;
+            return _spatial_object_reference;
         }
 
         int32_t eof() const
         {
-            return _eof;
+            return isNull(_spatial_object_reference);
         }
 
         void setEOF()
         {
             _key = Z();
-            _spatial_object = NULL;
-            _eof = true;
+            setNull(_spatial_object_reference);
         }
 
-        void set(Z z, SpatialObject* spatial_object)
+        void set(Z z, SOR spatial_object_reference)
         {
-            _key = SpatialObjectKey(z, spatial_object->id());
-            _spatial_object = spatial_object;
-            _eof = false;
+            GEOPHILE_ASSERT(!isNull(spatial_object_reference));
+            _key = SpatialObjectKey(z, spatialObjectId(spatial_object_reference));
+            _spatial_object_reference = spatial_object_reference;
         }
 
         Record()
-            : _key(),
-              _spatial_object(NULL),
-              _eof(true)
-        {}
+            : _key()
+        {
+            setNull(_spatial_object_reference);
+        }
 
         Record(const Record& record)
             : _key(record._key),
-              _spatial_object(record._spatial_object),
-              _eof(record._eof)
+              _spatial_object_reference(record._spatial_object_reference)
         {}
 
     private:
         SpatialObjectKey _key;
-        SpatialObject* _spatial_object;
-        int32_t _eof;
+        SOR _spatial_object_reference;
     };
 }
 
