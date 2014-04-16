@@ -22,6 +22,7 @@ install(FILES
   Cursor.h
   GeophileException.h
   OrderedIndex.h
+  OutputArray.h
   Point2.h
   Record.h
   SessionMemory.h
@@ -30,7 +31,6 @@ install(FILES
   SpatialIndexFilter.h
   SpatialIndexScan.h
   SpatialObject.h
-  SpatialObjectArray.h
   SpatialObjectKey.h
   SpatialObjectTypes.h
   DESTINATION include)

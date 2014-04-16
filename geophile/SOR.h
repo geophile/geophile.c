@@ -23,35 +23,38 @@
 
 namespace geophile
 {
-    inline void initializeSpatialObjectReference(const SpatialObject*& sor, 
-                                                 const SpatialObject* spatial_object)
+    namespace SpatialObjectReference
     {
-        sor = spatial_object;
-    }
-
-    inline bool isNull(const SpatialObject* sor)
-    {
-        return sor == NULL;
-    }
-    
-    inline void setNull(const SpatialObject*& sor)
-    {
-        sor = NULL;
-    }
-    
-    inline int64_t spatialObjectId(const SpatialObject* sor)
-    {
-        return sor->id();
-    }
-
-    inline const SpatialObject* spatialObject(const SpatialObject* sor)
-    {
-        return sor;
-    }
-
-    inline void deleteSpatialObject(const SpatialObject* sor)
-    {
-        delete (SpatialObject*) sor;
+        inline void initializeSpatialObjectReference(const SpatialObject*& sor, 
+                                                     const SpatialObject* spatial_object)
+        {
+            sor = spatial_object;
+        }
+        
+        inline bool isNull(const SpatialObject* sor)
+        {
+            return sor == NULL;
+        }
+        
+        inline void setNull(const SpatialObject*& sor)
+        {
+            sor = NULL;
+        }
+        
+        inline int64_t spatialObjectId(const SpatialObject* sor)
+        {
+            return sor->id();
+        }
+        
+        inline const SpatialObject* spatialObject(const SpatialObject* sor)
+        {
+            return sor;
+        }
+        
+        inline void deleteSpatialObject(const SpatialObject* sor)
+        {
+            delete (SpatialObject*) sor;
+        }
     }
 }
 

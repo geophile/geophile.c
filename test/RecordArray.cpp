@@ -16,7 +16,7 @@ template <typename SOR>
 SOR RecordArray<SOR>::remove(Z z, int64_t soid)
 {
     SOR removed;
-    setNull(removed);
+    SpatialObjectReference::setNull(removed);
     SpatialObjectKey key(z, soid);
     int32_t remove_position = position(key, 
                                        /* forward_move */ true, 
@@ -67,7 +67,7 @@ template <typename SOR>
 RecordArray<SOR>::~RecordArray()
 {
     for (int i = 0; i < _n; i++) {
-        deleteSpatialObject(_records[i].spatialObjectReference());
+        SpatialObjectReference::deleteSpatialObject(_records[i].spatialObjectReference());
     }
     delete [] _records;
     delete [] _buffer;

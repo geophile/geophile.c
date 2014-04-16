@@ -25,7 +25,7 @@ double Space::hi(int32_t d) const
 
 void Space::decompose(const SpatialObject* spatial_object, 
                       uint32_t max_z,
-                      SessionMemory* memory) const
+                      SessionMemoryBase* memory) const
 {
     ZArray* zs = memory->zArray();
     RegionPool* regions = memory->regions();

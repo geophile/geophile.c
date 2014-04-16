@@ -7,7 +7,7 @@
 
 namespace geophile
 {
-    class SessionMemory;
+    class SessionMemoryBase;
     class SpatialObject;
     class Region;
     class RegionPool;
@@ -47,7 +47,7 @@ namespace geophile
          */
         void decompose(const SpatialObject* spatial_object, 
                        uint32_t max_z,
-                       SessionMemory* memory) const;
+                       SessionMemoryBase* memory) const;
 
         /*
          * Returns a coordinate in the Z space, right-justified, not a z-value.

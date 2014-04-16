@@ -35,26 +35,28 @@ namespace geophile
 
         int32_t eof() const
         {
-            return isNull(_spatial_object_reference);
+            return SpatialObjectReference::isNull(_spatial_object_reference);
         }
 
         void setEOF()
         {
             _key = Z();
-            setNull(_spatial_object_reference);
+            SpatialObjectReference::setNull(_spatial_object_reference);
         }
 
         void set(Z z, SOR spatial_object_reference)
         {
-            GEOPHILE_ASSERT(!isNull(spatial_object_reference));
-            _key = SpatialObjectKey(z, spatialObjectId(spatial_object_reference));
+            GEOPHILE_ASSERT(!SpatialObjectReference::isNull(spatial_object_reference));
+            _key = 
+                SpatialObjectKey(z, 
+                                 SpatialObjectReference::spatialObjectId(spatial_object_reference));
             _spatial_object_reference = spatial_object_reference;
         }
 
         Record()
             : _key()
         {
-            setNull(_spatial_object_reference);
+            SpatialObjectReference::setNull(_spatial_object_reference);
         }
 
         Record(const Record& record)

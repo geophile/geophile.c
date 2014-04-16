@@ -124,18 +124,25 @@ A `SpatialIndex` is created:
 
 The spatial index is loaded with 1,000,000 points:
 
-        static void loadRandomPoints(SpatialIndex* spatial_index, SessionMemory* memory)
+        static void loadRandomPoints(SpatialIndex<const SpatialObject*>* spatial_index, 
+                                     SessionMemory<const SpatialObject*>* memory)
         {
             srand(419);
+            stopwatch.reset();
             int64_t id = 0;
-            for (uint32_t id = 0; id < N_POINTS; id) {
+            for (uint32_t id = 0; id < N_POINTS; id++) {
                 double x = rand() % X_MAX;
                 double y = rand() % Y_MAX;
-                Point2 point(x, y);
-                point.id(id);
-                spatial_index->add(&point, memory);
+                // Add a point in the heap, that will be owned by the index.
+                Point2* point = new Point2(x, y);
+                point->id(id);
+                spatial_index->add(point, memory);
             }
             spatial_index->freeze();
+            stopwatch.stop();
+            double sec = stopwatch.usec() / 1000000.0;
+            printf("Loaded %d points in %f sec (%f points/sec)\n",
+                   N_POINTS, sec, N_POINTS / sec);
         }
 
 Here is how the points located in a box are found:
@@ -151,7 +158,8 @@ Here is how the points located in a box are found:
             printf("Query %d: (%f : %f, %f : %f)\\n", q, x_lo, x_hi, y_lo, y_hi);
             PointFilter filter;
             spatial_index->findOverlapping(&box, &filter, memory);
-            SpatialObjectArray* output = memory->output();
+            OutputArray<const SpatialObject*>* output = 
+                (OutputArray<const SpatialObject*>*) memory->output();
             // output contains the query result
             memory->clearOutput();
         }

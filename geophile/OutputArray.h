@@ -1,9 +1,9 @@
-#ifndef _SPATIAL_OBJECT_ARRAY_H
-#define _SPATIAL_OBJECT_ARRAY_H
+#ifndef _OUTPUT_ARRAY_H
+#define _OUTPUT_ARRAY_H
 
 #include <stdint.h>
 #include <stdlib.h>
-#include "SpatialObjectArrayBase.h"
+#include "OutputArrayBase.h"
 #include "util.h"
 
 typedef int32_t (*SortFunction)(const void*, const void*);
@@ -13,10 +13,10 @@ namespace geophile
     class SpatialObject;
 
     /*
-     * A SpatialObjectArray is used to accumulate the SpatialObjects
+     * A OutputArray is used to accumulate the SpatialObjects
      * resulting from one or more retrievals from a SpatialIndex.
      */
-    template <typename SOR> class SpatialObjectArray : public SpatialObjectArrayBase
+    template <typename SOR> class OutputArray : public OutputArrayBase
     {
     public:
         /*
@@ -29,20 +29,20 @@ namespace geophile
         }
 
     public: // Used internally and in testing
-        virtual ~SpatialObjectArray()
-        {
-            delete [] _contents;
-        }
-
-        SpatialObjectArray()
-            : _contents(new SOR[INITIAL_CAPACITY])
-        {}
-
         void append(SOR sor)
         {
             ensureSpace();
             _contents[_n++] = sor;
         }
+
+        virtual ~OutputArray()
+        {
+            delete [] _contents;
+        }
+
+        OutputArray()
+            : _contents(new SOR[INITIAL_CAPACITY])
+        {}
 
     public: // Used in testing
         void sort(SortFunction sort_function)

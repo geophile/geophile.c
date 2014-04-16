@@ -39,9 +39,9 @@ namespace geophile
          * Adds spatial_object to this SpatialIndex. memory contains
          * resources used internally.
          */
-        void add(const SOR& sor, SessionMemory* memory)
+        void add(const SOR& sor, SessionMemory<SOR>* memory)
         {
-            const SpatialObject* spatial_object = spatialObject(sor);
+            const SpatialObject* spatial_object = SpatialObjectReference::spatialObject(sor);
             GEOPHILE_ASSERT(spatial_object->id() != SpatialObject::UNINITIALIZED_ID);
             ZArray* zs = memory->zArray();
             zs->clear();
@@ -55,7 +55,7 @@ namespace geophile
          * Removes spatial_object to this SpatialIndex. memory contains
          * resources used internally.
          */
-        int32_t remove(const SpatialObject& spatial_object, SessionMemory* memory)
+        int32_t remove(const SpatialObject& spatial_object, SessionMemory<SOR>* memory)
         {
             // TBD
             GEOPHILE_ASSERT(false); 
@@ -78,7 +78,7 @@ namespace geophile
          */
         void findOverlapping(const SpatialObject* query_object, 
                              const SpatialIndexFilter* filter,
-                             SessionMemory* memory) const
+                             SessionMemory<SOR>* memory) const
         {
             _space->decompose(query_object, query_object->maxZ(), memory);
             SpatialIndexScan<SOR>* scan = newScan(query_object, filter, memory);
@@ -102,12 +102,12 @@ namespace geophile
     public: // Not part of the API. Public for testing.
         SpatialIndexScan<SOR>* newScan(const SpatialObject* query_object,
                                        const SpatialIndexFilter* filter, 
-                                       SessionMemory* memory) const
+                                       SessionMemory<SOR>* memory) const
         {
             return new SpatialIndexScan<SOR>(_index, 
                                              query_object, 
                                              filter, 
-                                             (SpatialObjectArray<SOR>*) memory->output());
+                                             (OutputArray<SOR>*) memory->output());
         }
 
     private:
