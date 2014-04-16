@@ -9,12 +9,6 @@ namespace geophile
 {
     class TestSpatialObject : public SpatialObject
     {
-    public:
-        static const uint32_t TYPE_ID = 0;
-        
-    private:
-        int64_t _id;
-        
     public: // SpatialObject
         virtual void id(int64_t id)
         {
@@ -71,6 +65,22 @@ namespace geophile
         virtual ~TestSpatialObject()
         {}
         
+        virtual void copyFrom(const SpatialObject* spatial_object)
+        {
+            const TestSpatialObject* s = (const TestSpatialObject*) spatial_object;
+            _id = s->_id;
+        }
+
+        virtual bool isNull() const
+        {
+            return _id == UNDEFINED_ID;
+        }
+
+        virtual void setNull()
+        {
+            _id = UNDEFINED_ID;
+        }
+
     public: // TestSpatialObject
         TestSpatialObject(int64_t id)
             : _id(id)
@@ -79,6 +89,15 @@ namespace geophile
         TestSpatialObject()
             : _id(0)
         {}
+
+    public:
+        static const uint32_t TYPE_ID = 0;
+
+    private:
+        static const int32_t UNDEFINED_ID = -1;
+        
+    private:
+        int64_t _id;        
     };
 }
 

@@ -14,10 +14,9 @@
 namespace geophile
 {
     template <typename SOR> class OrderedIndex;
-    class SessionMemory;
+    template <typename SOR> class SpatialIndexScan;
     class Space;
     class SpatialIndexFilter;
-    template <typename SOR> class SpatialIndexScan;
     class SpatialObject;
 
     /*
@@ -40,14 +39,15 @@ namespace geophile
          * Adds spatial_object to this SpatialIndex. memory contains
          * resources used internally.
          */
-        void add(const SpatialObject* spatial_object, SessionMemory* memory)
+        void add(const SOR& sor, SessionMemory* memory)
         {
+            const SpatialObject* spatial_object = spatialObject(sor);
             GEOPHILE_ASSERT(spatial_object->id() != SpatialObject::UNINITIALIZED_ID);
             ZArray* zs = memory->zArray();
             zs->clear();
             _space->decompose(spatial_object, spatial_object->maxZ(), memory);
             for (uint32_t i = 0; i < zs->length(); i++) {
-                _index->add(zs->at(i), spatial_object);
+                _index->add(zs->at(i), sor);
             }
         }
 
@@ -104,7 +104,10 @@ namespace geophile
                                        const SpatialIndexFilter* filter, 
                                        SessionMemory* memory) const
         {
-            return new SpatialIndexScan<SOR>(_index, query_object, filter, memory->output());
+            return new SpatialIndexScan<SOR>(_index, 
+                                             query_object, 
+                                             filter, 
+                                             (SpatialObjectArray<SOR>*) memory->output());
         }
 
     private:

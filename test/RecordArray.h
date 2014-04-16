@@ -19,8 +19,8 @@ namespace geophile
     {
     public:
         // Index
-        virtual void add(Z z, const SpatialObject* spatial_object);
-        virtual int32_t remove(Z z, int64_t soid);
+        virtual void add(Z z, const SOR& sor);
+        virtual SOR remove(Z z, int64_t soid);
         virtual void freeze();
         virtual Cursor<SOR>* cursor();
         virtual ~RecordArray();
@@ -33,7 +33,6 @@ namespace geophile
                          int32_t include_key) const;
         uint32_t nRecords() const;
         Record<SOR> at(int32_t position) const;
-        SpatialObject* copySpatialObject(const SpatialObject* spatial_object);
         RecordArray(const SpatialObjectTypes* spatial_object_types, uint32_t capacity);
        
     private:

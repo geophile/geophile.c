@@ -47,9 +47,9 @@ namespace geophile
 
     protected:
 
-        void current(Z z, SpatialObject* spatial_object)
+        void current(Z z, SOR sor)
         {
-            _current.set(z, spatial_object);
+            _current.set(z, sor);
         }
 
         void current(const Record<SOR>& record)

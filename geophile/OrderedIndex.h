@@ -29,15 +29,16 @@ namespace geophile
     public:
         /*
          * Adds ((z, spatial_object->id()), spatial_object) to this
-         * OrderedIndex..
+         * OrderedIndex, where spatial_object = sor.spatialObject().
          */
-        virtual void add(Z z, const SpatialObject* spatial_object) = 0;
+        virtual void add(Z z, const SOR& sor) = 0;
         /*
          * Removes from the OrderedIndex the record keyed by (z,
-         * soid).  Returns true if a record was found and removed,
-         * false otherwise.
+         * soid).  Returns the SOR that was located and removed.  If
+         * no record was removed, then for the SOR returned, sor,
+         * isNull(sor) is true..
          */
-        virtual int32_t remove(Z z, int64_t soid) = 0;
+        virtual SOR remove(Z z, int64_t soid) = 0;
         /*
          * Prepare the index for retrievals. Depending on the
          * implementation, an OrderedIndex may be searchable before

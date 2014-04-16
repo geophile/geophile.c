@@ -1,12 +1,15 @@
 #ifndef _SESSION_MEMORY_H
 #define _SESSION_MEMORY_H
 
+#include "SpatialObjectArrayBase.h"
+#include "ZArray.h"
+#include "RegionPool.h"
+
 namespace geophile
 {
     class RegionPool;
     class Space;
     class SpatialObject;
-    class SpatialObjectArray;
     class ZArray;
 
     /*
@@ -20,27 +23,51 @@ namespace geophile
          * Returns an internally-maintained SpatialObjectArray that accumulates output
          * from SpatialIndex retrievals.
          */
-        SpatialObjectArray* output();
+        SpatialObjectArrayBase* output()
+        {
+            return _output;
+        }
+
         /*
          * Clears the internally-maintained SpatialObjectArray returned by output().
          */
-        void clearOutput();
+        void clearOutput()
+        {
+            _output->clear();
+        }
+
         /*
          * Destructor
          */
-        ~SessionMemory();
+        ~SessionMemory()
+        {
+            delete _zs;
+            delete _regions;
+        }
+
         /*
          * Constructor
          */
-        SessionMemory();
+        SessionMemory(SpatialObjectArrayBase* output)
+            : _output(output),
+              _zs(new ZArray()),
+              _regions(new RegionPool())
+        {}
 
     public: // Used internally. 
         // Friend declarations not used because these are also used in testing.
-        ZArray* zArray();
-        RegionPool* regions();
+        ZArray* zArray()
+        {
+            return _zs;
+        }
+
+        RegionPool* regions()
+        {
+            return _regions;
+        }
 
     private:
-        SpatialObjectArray* _output;
+        SpatialObjectArrayBase* _output;
         ZArray* _zs;
         RegionPool* _regions;
     };

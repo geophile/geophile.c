@@ -109,8 +109,10 @@ static void tooFewDimensions()
 static void tooManyDimensions()
 {
     try {
-        double lo[] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-        double hi[] = {1000.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0};
+        double lo[] = {0.0, 0.0, 0.0, 0.0, 0.0, 
+                       0.0, 0.0, 0.0, 0.0, 0.0};
+        double hi[] = {1000.0, 1000.0, 1000.0, 1000.0, 1000.0, 
+                       1000.0, 1000.0, 1000.0, 1000.0, 1000.0};
         uint32_t x_bits[] = {10, 10, 10, 10, 10, 10, 10, 10, 10, 10};
         ASSERT_TRUE(10 > Space::MAX_DIMENSIONS);
         Space space(10, lo, hi, x_bits);
@@ -152,7 +154,11 @@ static void checkInterleave(const Space& space, int64_t expected, uint64_t x, ui
     ASSERT_EQ(zvalue(expected, space.zBits()), space.shuffle(coords));
 }
 
-static void checkInterleave(const Space& space, int64_t expected, uint64_t x, uint64_t y, uint64_t z)
+static void checkInterleave(const Space& space, 
+                            int64_t expected, 
+                            uint64_t x, 
+                            uint64_t y, 
+                            uint64_t z)
 {
     const uint64_t coords[] = {x, y, z};
     ASSERT_EQ(zvalue(expected, space.zBits()), space.shuffle(coords));
@@ -336,7 +342,8 @@ static void decomposeEntireSpace()
     uint32_t x_bits[] = {10, 10};
     Space space(2, lo, hi, x_bits);
     Box2 box(0, 1023, 0, 1023);
-    SessionMemory memory;
+    SpatialObjectArray<const SpatialObject*> output;
+    SessionMemory memory(&output);
     ZArray* zs = memory.zArray();
     space.decompose(&box, 4, &memory);
     ASSERT_EQ(1, zs->length());
@@ -350,7 +357,8 @@ static void decomposeLeftHalfSpace()
     uint32_t x_bits[] = {10, 10};
     Space space(2, lo, hi, x_bits);
     Box2 box(0, 511, 0, 1023);
-    SessionMemory memory;
+    SpatialObjectArray<const SpatialObject*> output;
+    SessionMemory memory(&output);
     ZArray* zs = memory.zArray();
     space.decompose(&box, 4, &memory);
     ASSERT_EQ(1, zs->length());
@@ -364,7 +372,8 @@ static void decomposeRightHalfSpace()
     uint32_t x_bits[] = {10, 10};
     Space space(2, lo, hi, x_bits);
     Box2 box(512, 1023, 0, 1023);
-    SessionMemory memory;
+    SpatialObjectArray<const SpatialObject*> output;
+    SessionMemory memory(&output);
     ZArray* zs = memory.zArray();
     space.decompose(&box, 4, &memory);
     ASSERT_EQ(1, zs->length());
@@ -378,7 +387,8 @@ static void decomposeBottomHalfSpace()
     uint32_t x_bits[] = {10, 10};
     Space space(2, lo, hi, x_bits);
     Box2 box(0, 1023, 0, 511);
-    SessionMemory memory;
+    SpatialObjectArray<const SpatialObject*> output;
+    SessionMemory memory(&output);
     ZArray* zs = memory.zArray();
     space.decompose(&box, 4, &memory);
     ASSERT_EQ(2, zs->length());
@@ -393,7 +403,8 @@ static void decomposeTopHalfSpace()
     uint32_t x_bits[] = {10, 10};
     Space space(2, lo, hi, x_bits);
     Box2 box(0, 1023, 512, 1023);
-    SessionMemory memory;
+    SpatialObjectArray<const SpatialObject*> output;
+    SessionMemory memory(&output);
     ZArray* zs = memory.zArray();
     space.decompose(&box, 4, &memory);
     ASSERT_EQ(2, zs->length());
@@ -408,7 +419,8 @@ static void decomposeTinyBoxInMiddleOfSpace()
     uint32_t x_bits[] = {10, 10};
     Space space(2, lo, hi, x_bits);
     Box2 box(511, 512, 511, 512);
-    SessionMemory memory;
+    SpatialObjectArray<const SpatialObject*> output;
+    SessionMemory memory(&output);
     ZArray* zs = memory.zArray();
     space.decompose(&box, 4, &memory);
     ASSERT_EQ(4, zs->length());
@@ -567,18 +579,20 @@ static int32_t key_position(const SpatialObjectKey* keys,
     return position;
 }
 
-static void load(OrderedIndex<SpatialObject*>& index, uint32_t n_objects, uint32_t copies)
+static void load(OrderedIndex<const SpatialObject*>& index, 
+                 uint32_t n_objects, 
+                 uint32_t copies)
 {
     for (uint32_t id = 0; id < n_objects; id++) {
-        TestSpatialObject spatial_object(id);
+        TestSpatialObject* spatial_object = new TestSpatialObject(id);
         for (uint32_t c = 0; c < copies; c++) {
             Z z = int_to_z((id + c) * GAP);
-            index.add(z, &spatial_object);
+            index.add(z, spatial_object);
         }
     }
 }
 
-static void checkContents(OrderedIndex<SpatialObject*>& index, 
+static void checkContents(OrderedIndex<const SpatialObject*>& index, 
                           uint32_t n_objects, 
                           uint32_t copies, 
                           const IntSet& removed_ids)
@@ -588,16 +602,16 @@ static void checkContents(OrderedIndex<SpatialObject*>& index,
     for (uint32_t id = 0; id < n_objects; id++) {
         z_by_id[id] = new IntList(copies);
     }
-    Cursor<SpatialObject*>* cursor = index.cursor();
+    Cursor<const SpatialObject*>* cursor = index.cursor();
     cursor->goTo(Z(Z::Z_MIN, 0));
-    geophile::Record<SpatialObject*> record;
+    geophile::Record<const SpatialObject*> record;
     while (!(record = cursor->next()).eof()) {
-        int64_t id = (int) record.spatialObject()->id();
+        int64_t id = spatialObjectId(record.spatialObjectReference());
         ASSERT_TRUE(!removed_ids.contains(id));
         present_ids.add(id);
         IntList& z_list = *z_by_id[id];
         z_list.append(z_to_int(record.key().z()));
-        delete record.spatialObject();
+        // deleteSpatialObject(record.spatialObjectReference());
     }
     for (int64_t id = 0; id < n_objects; id++) {
         if (!removed_ids.contains(id)) {
@@ -605,7 +619,9 @@ static void checkContents(OrderedIndex<SpatialObject*>& index,
             IntList& z_list = *z_by_id[id];
             ASSERT_EQ(copies, z_list.count());
             int64_t z_expected = id * GAP;
-            for (uint32_t z_list_position = 0; z_list_position < z_list.count(); z_list_position++) {
+            for (uint32_t z_list_position = 0; 
+                 z_list_position < z_list.count(); 
+                 z_list_position++) {
                 int64_t z = z_list.at(z_list_position);
                 ASSERT_EQ(z_expected, z);
                 z_expected += GAP;
@@ -624,7 +640,9 @@ static int32_t compareSpatialObjectKey(const void* x, const void* y)
     return ((const SpatialObjectKey*)x)->compare(*(const SpatialObjectKey*)y);
 }
 
-static void checkRetrieval(OrderedIndex<SpatialObject*>& index, uint32_t n_objects, uint32_t copies)
+static void checkRetrieval(OrderedIndex<const SpatialObject*>& index, 
+                           uint32_t n_objects, 
+                           uint32_t copies)
 {
     // Expected
     uint32_t n_keys = n_objects * copies;
@@ -640,17 +658,17 @@ static void checkRetrieval(OrderedIndex<SpatialObject*>& index, uint32_t n_objec
     }
     qsort(all_keys, n_objects * copies, sizeof(SpatialObjectKey), compareSpatialObjectKey);
     SpatialObjectKey* expected;
-    geophile::Record<SpatialObject*> record;
+    geophile::Record<const SpatialObject*> record;
     int64_t start;
     SpatialObjectKey start_key;
-    Cursor<SpatialObject*>* cursor = index.cursor();
+    Cursor<const SpatialObject*>* cursor = index.cursor();
     // Try traversal forward from the beginning
     start_key = SpatialObjectKey(zvalue(Z::Z_MIN, 0));
     expected = &all_keys[0];
     cursor->goTo(start_key.z());
     while (!(record = cursor->next()).eof()) {
         ASSERT_EQ(expected->z(), record.key().z());
-        delete record.spatialObject();
+        // deleteSpatialObject(record.spatialObjectReference());
         expected++;
     }
     ASSERT_TRUE(expected == all_keys_limit);
@@ -661,7 +679,7 @@ static void checkRetrieval(OrderedIndex<SpatialObject*>& index, uint32_t n_objec
     cursor->goTo(start_key.z());
     while (!(record = cursor->next()).eof()) {
         ASSERT_EQ(expected->z(), record.key().z());
-        delete record.spatialObject();
+        // deleteSpatialObject(record.spatialObjectReference());
         expected++;
     }
     ASSERT_EQ(expected, all_keys_limit);
@@ -670,7 +688,7 @@ static void checkRetrieval(OrderedIndex<SpatialObject*>& index, uint32_t n_objec
     expected = all_keys_limit;
     cursor->goTo(start_key.z());
     while (!(record = cursor->next()).eof()) {
-        delete record.spatialObject();
+        // deleteSpatialObject(record.spatialObjectReference());
         ASSERT_TRUE(false);
     }
     ASSERT_TRUE(expected == all_keys_limit);
@@ -679,7 +697,7 @@ static void checkRetrieval(OrderedIndex<SpatialObject*>& index, uint32_t n_objec
     expected = all_keys_reverse_limit;
     cursor->goTo(start_key.z());
     while (!(record = cursor->previous()).eof()) {
-        delete record.spatialObject();
+        // deleteSpatialObject(record.spatialObjectReference());
         ASSERT_TRUE(false);
     }
     ASSERT_TRUE(expected == all_keys_reverse_limit);
@@ -690,7 +708,7 @@ static void checkRetrieval(OrderedIndex<SpatialObject*>& index, uint32_t n_objec
     cursor->goTo(start_key.z());
     while (!(record = cursor->previous()).eof()) {
         ASSERT_EQ(expected->z(), record.key().z());
-        delete record.spatialObject();
+        // deleteSpatialObject(record.spatialObjectReference());
         expected--;
     }
     ASSERT_EQ(expected, all_keys_reverse_limit);
@@ -700,7 +718,7 @@ static void checkRetrieval(OrderedIndex<SpatialObject*>& index, uint32_t n_objec
     cursor->goTo(start_key.z());
     while (!(record = cursor->previous()).eof()) {
         ASSERT_EQ(expected->z(), record.key().z());
-        delete record.spatialObject();
+        // deleteSpatialObject(record.spatialObjectReference());
         expected--;
     }
     ASSERT_EQ(expected, all_keys_reverse_limit);
@@ -708,20 +726,29 @@ static void checkRetrieval(OrderedIndex<SpatialObject*>& index, uint32_t n_objec
     delete [] all_keys;
 }
 
-static void removeAll(OrderedIndex<SpatialObject*>& index, uint32_t n_objects, uint32_t copies)
+static void removeAll(OrderedIndex<const SpatialObject*>& index, 
+                      uint32_t n_objects, 
+                      uint32_t copies)
 {
     IntSet removed_ids(n_objects);
     for (int64_t id = 0; id < n_objects; id++) {
+        const SpatialObject* spatial_object = NULL;
         // Remove id and check remaining contents
         for (int64_t c = 0; c < copies; c++) {
             int64_t expected = (id + c) * GAP;
-            int32_t removed = index.remove(int_to_z(expected), id);
-            ASSERT_TRUE(removed);
+            const SpatialObject* removed = index.remove(int_to_z(expected), id);
+            ASSERT_TRUE(!isNull(removed));
+            if (spatial_object) {
+                ASSERT_TRUE(removed == spatial_object);
+            } else {
+                spatial_object = removed;
+            }
             removed = index.remove(int_to_z(expected + GAP / 2), id);
-            ASSERT_TRUE(!removed);
+            ASSERT_TRUE(isNull(removed));
             removed = index.remove(int_to_z(expected), 0x7fffffffffffffffLL);
-            ASSERT_TRUE(!removed);
+            ASSERT_TRUE(isNull(removed));
         }
+        deleteSpatialObject(spatial_object);
         removed_ids.add(id);
         if (id % 1000 == 0) {
             checkContents(index, n_objects, copies, removed_ids);
@@ -731,14 +758,14 @@ static void removeAll(OrderedIndex<SpatialObject*>& index, uint32_t n_objects, u
 
 static void testIndexCreationAndDestruction()
 {
-    RecordArray<SpatialObject*> index(&SPATIAL_OBJECT_TYPES, 100);
+    RecordArray<const SpatialObject*> index(&SPATIAL_OBJECT_TYPES, 100);
 }
 
 static void testIndexOperations()
 {
     for (uint32_t n_objects = 0; n_objects <= 1000; n_objects += 100) {
         for (uint32_t copies = 1; copies <= 8; copies++) {
-            RecordArray<SpatialObject*> index(&SPATIAL_OBJECT_TYPES, n_objects * copies);
+            RecordArray<const SpatialObject*> index(&SPATIAL_OBJECT_TYPES, n_objects * copies);
             load(index, n_objects, copies);
             index.freeze();
             checkContents(index, n_objects, copies, IntSet(n_objects));
@@ -758,19 +785,19 @@ static void testIndex()
 
 // Cursor
 
-static Z key(const geophile::Record<SpatialObject*>& entry)
+static Z key(const geophile::Record<const SpatialObject*>& entry)
 {
     return entry.key().z();
 }
 
 
-static void test_cursor(OrderedIndex<SpatialObject*>* index, int32_t n) 
+static void test_cursor(OrderedIndex<const SpatialObject*>* index, int32_t n) 
 {
-    Cursor<SpatialObject*>* cursor = index->cursor();
+    Cursor<const SpatialObject*>* cursor = index->cursor();
     int64_t expected_key;
     int64_t expected_last_key;
     int32_t expected_empty;
-    geophile::Record<SpatialObject*> record;
+    geophile::Record<const SpatialObject*> record;
     // Full cursor
     {
         cursor->goTo(SpatialObjectKey(zvalue(Z::Z_MIN, 0)));
@@ -778,7 +805,7 @@ static void test_cursor(OrderedIndex<SpatialObject*>* index, int32_t n)
         while (!(record = cursor->next()).eof()) {
             ASSERT_EQ(expected_key, z_to_int(key(record)));
             expected_key += GAP;
-            delete record.spatialObject();
+            // deleteSpatialObject(record.spatialObjectReference());
         }
         ASSERT_EQ(n * GAP, expected_key);
     }
@@ -809,10 +836,10 @@ static void test_cursor(OrderedIndex<SpatialObject*>* index, int32_t n)
                             ASSERT_EQ(expected_key, z_to_int(key(record)));
                             expected_key += GAP;
                             empty = false;
-                            delete record.spatialObject();
+                            // deleteSpatialObject(record.spatialObjectReference());
                         }
                         if (!record.eof()) {
-                            delete record.spatialObject();
+                            // deleteSpatialObject(record.spatialObjectReference());
                         }
                         if (empty) {
                             ASSERT_TRUE(expected_empty);
@@ -831,22 +858,22 @@ static void test_cursor(OrderedIndex<SpatialObject*>* index, int32_t n)
         record = cursor->next();
         if (!record.eof()) {
             expected_key += GAP;
-            delete record.spatialObject();
+            // deleteSpatialObject(record.spatialObjectReference());
         }
         while (!(record = cursor->next()).eof()) {
             ASSERT_EQ(expected_key, z_to_int(key(record)));
             expected_key += GAP;
-            delete record.spatialObject();
+            // deleteSpatialObject(record.spatialObjectReference());
             if (expected_key != n * GAP) {
                 record = cursor->next();
                 ASSERT_TRUE(!record.eof());
                 ASSERT_EQ(expected_key, z_to_int(key(record)));
-                delete record.spatialObject();
+                // deleteSpatialObject(record.spatialObjectReference());
                 expected_key -= GAP;
                 record = cursor->previous();
                 ASSERT_EQ(expected_key, z_to_int(key(record)));
                 expected_key += GAP; // About to go to next
-                delete record.spatialObject();
+                // deleteSpatialObject(record.spatialObjectReference());
             }
         }
         ASSERT_EQ(n * GAP, expected_key);
@@ -858,20 +885,20 @@ static void test_cursor(OrderedIndex<SpatialObject*>* index, int32_t n)
         record = cursor->previous();
         if (!record.eof()) {
             expected_key -= GAP;
-            delete record.spatialObject();
+            // deleteSpatialObject(record.spatialObjectReference());
         }
         while (!(record = cursor->previous()).eof()) {
-            delete record.spatialObject();
+            // deleteSpatialObject(record.spatialObjectReference());
             ASSERT_EQ(expected_key, z_to_int(key(record)));
             expected_key -= GAP;
             if (expected_key >= 0) {
                 record = cursor->previous();
-                delete record.spatialObject();
+                // deleteSpatialObject(record.spatialObjectReference());
                 ASSERT_TRUE(!record.eof());
                 ASSERT_EQ(expected_key, z_to_int(key(record)));
                 expected_key += GAP;
                 record = cursor->next();
-                delete record.spatialObject();
+                // deleteSpatialObject(record.spatialObjectReference());
                 ASSERT_EQ(expected_key, z_to_int(key(record)));
                 expected_key -= GAP; // About to go to next
             }
@@ -890,11 +917,11 @@ static void test_cursor(OrderedIndex<SpatialObject*>* index, int32_t n)
                 // Match, next
                 cursor->goTo(SpatialObjectKey(int_to_z(match)));
                 ASSERT_EQ(match, z_to_int(key(record = cursor->next())));
-                delete record.spatialObject();
+                // deleteSpatialObject(record.spatialObjectReference());
                 // Match, previous
                 cursor->goTo(SpatialObjectKey(int_to_z(match + 1)));
                 ASSERT_EQ(match, z_to_int(key(record = cursor->previous())));
-                delete record.spatialObject();
+                // deleteSpatialObject(record.spatialObjectReference());
             }
             // Before, next
             before = match - GAP / 2;
@@ -903,7 +930,7 @@ static void test_cursor(OrderedIndex<SpatialObject*>* index, int32_t n)
                 ASSERT_TRUE(cursor->next().eof());
             } else {
                 ASSERT_EQ(match, z_to_int(key(record = cursor->next())));
-                delete record.spatialObject();
+                // deleteSpatialObject(record.spatialObjectReference());
             }
             // Before, previous
             cursor->goTo(SpatialObjectKey(int_to_z(before)));
@@ -911,7 +938,7 @@ static void test_cursor(OrderedIndex<SpatialObject*>* index, int32_t n)
                 ASSERT_TRUE(cursor->previous().eof());
             } else {
                 ASSERT_EQ(match - GAP, z_to_int(key(record = cursor->previous())));
-                delete record.spatialObject();
+                // deleteSpatialObject(record.spatialObjectReference());
             }
         }
     }
@@ -923,13 +950,14 @@ static void testCursorVaryingIndexSizes()
 {
     static const uint32_t N_MAX = 100;
     for (uint32_t n = 0; n <= N_MAX; n++) {
-        OrderedIndex<SpatialObject*>* index = new RecordArray<SpatialObject*>(&SPATIAL_OBJECT_TYPES, n);
+        OrderedIndex<const SpatialObject*>* index = 
+            new RecordArray<const SpatialObject*>(&SPATIAL_OBJECT_TYPES, n);
         ASSERT_TRUE(GAP > 1);
         // Populate map with keys 0, GAP, ..., GAP * (n - 1)
         for (uint32_t i = 0; i < n; i++) {
             uint32_t key = GAP * i;
-            Point2 point(key, key);
-            index->add(int_to_z(key), &point);
+            Point2* point = new Point2(key, key);
+            index->add(int_to_z(key), point);
         }
         test_cursor(index, n);
     }
@@ -961,7 +989,8 @@ public:
     }
 };
 
-static void compare(const SpatialObjectArray* expected, const SpatialObjectArray* actual)
+static void compare(const SpatialObjectArray<const SpatialObject*>* expected, 
+                    const SpatialObjectArray<const SpatialObject*>* actual)
 {
     ASSERT_EQ(expected->length(), actual->length());
     for (uint32_t i = 0; i < actual->length(); i++) {
@@ -978,7 +1007,7 @@ static int32_t comparePoint(const void* x, const void* y)
         p->y() < q->y() ? -1 : p->y() > q->y() ? 1 : 0;
 }
 
-static void dump(const char* label, SpatialObjectArray* array)
+static void dump(const char* label, SpatialObjectArray<const SpatialObject*>* array)
 {
     printf("%s - %d:\n", label, array->length());
     for (int i = 0; i < array->length(); i++) {
@@ -987,7 +1016,7 @@ static void dump(const char* label, SpatialObjectArray* array)
     }
 }
 
-static void test_retrieval(SpatialIndex<SpatialObject*>* spatial_index,
+static void test_retrieval(SpatialIndex<const SpatialObject*>* spatial_index,
                            SessionMemory* memory,
                            int64_t xlo, int64_t xhi, int64_t ylo, int64_t yhi) 
 {
@@ -997,12 +1026,14 @@ static void test_retrieval(SpatialIndex<SpatialObject*>* spatial_index,
     const Space* space = spatial_index->space();
     ZArray* zs = memory->zArray();
     space->decompose(&box, box.maxZ(), memory);
-    SpatialIndexScan<SpatialObject*>* scan = spatial_index->newScan(&box, &filter, memory);
+    SpatialIndexScan<const SpatialObject*>* scan = spatial_index->newScan(&box, &filter, memory);
     for (uint32_t i = 0; i < zs->length(); i++) {
         scan->find(zs->at(i));
     }
-    SpatialObjectArray* actual = memory->output();
-    SpatialObjectArray* expected = new SpatialObjectArray();
+    SpatialObjectArray<const SpatialObject*>* actual = 
+        (SpatialObjectArray<const SpatialObject*>*) memory->output();
+    SpatialObjectArray<const SpatialObject*>* expected = 
+        new SpatialObjectArray<const SpatialObject*>();
     for (double x = 10 * ((xlo + 9) / 10); x <= 10 * (xhi / 10); x += 10) {
         for (double y = 10 * ((ylo + 9) / 10); y <= 10 * (yhi / 10); y += 10) {
             Point2* point = new Point2(x, y);
@@ -1015,6 +1046,9 @@ static void test_retrieval(SpatialIndex<SpatialObject*>* spatial_index,
     expected->sort(comparePoint);
     compare(expected, actual);
     memory->clearOutput();
+    for (uint32_t i = 0; i < expected->length(); i++) {
+        deleteSpatialObject(expected->at(i));
+    }
     delete expected;
     delete scan;
 }
@@ -1028,15 +1062,18 @@ static void testRetrievalRandomized()
     double hi[] = {X_MAX, Y_MAX};
     uint32_t x_bits[] = {10, 10};
     Space* space = new Space(2, lo, hi, x_bits);
-    RecordArray<SpatialObject*>* index = new RecordArray<SpatialObject*>(&SPATIAL_OBJECT_TYPES, N_RECORDS);
-    SpatialIndex<SpatialObject*>* spatial_index = new SpatialIndex<SpatialObject*>(space, index);
-    SessionMemory memory;
+    RecordArray<const SpatialObject*>* index = 
+        new RecordArray<const SpatialObject*>(&SPATIAL_OBJECT_TYPES, N_RECORDS);
+    SpatialIndex<const SpatialObject*>* spatial_index = 
+        new SpatialIndex<const SpatialObject*>(space, index);
+    SpatialObjectArray<const SpatialObject*> output;
+    SessionMemory memory(&output);
     int64_t id = 0;
     for (double x = 0; x < X_MAX; x += 10) {
         for (double y = 0; y < Y_MAX; y += 10) {
-            Point2 point(x, y);
-            point.id(id++);
-            spatial_index->add(&point, &memory);
+            Point2* point = new Point2(x, y);
+            point->id(id++);
+            spatial_index->add(point, &memory);
         }
     }
     // fflush(stdout);

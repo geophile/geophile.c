@@ -9,9 +9,7 @@ add_library(geophile SHARED
   Region.cpp
   RegionPool.cpp
   RegionQueue.cpp
-  SessionMemory.cpp
   Space.cpp
-  SpatialObjectArray.cpp
   SpatialObjectTypes.cpp
   ZArray.cpp)
 

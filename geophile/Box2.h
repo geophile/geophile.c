@@ -9,7 +9,7 @@ namespace geophile
 {
     class Box2 : public SpatialObject
     {
-    public:
+    public: // SpatialObject
         virtual void id(int64_t id);
         virtual int64_t id() const;
         virtual void arbitraryPoint(double* coords) const;
@@ -20,6 +20,11 @@ namespace geophile
         virtual int32_t typeId() const;
         virtual void readFrom(ByteBuffer& byte_buffer);
         virtual void writeTo(ByteBuffer& byte_buffer) const;
+        virtual void copyFrom(const SpatialObject* spatial_object);
+        virtual bool isNull() const;
+        virtual void setNull();
+
+    public: // Box2
         double xlo() const;
         double xhi() const;
         double ylo() const;

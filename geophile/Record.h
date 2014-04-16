@@ -18,7 +18,7 @@ namespace geophile
             if (record.eof()) {
                 setEOF();
             } else {
-                set(record.key().z(), record.spatialObject());
+                set(record.key().z(), record.spatialObjectReference());
             }
             return *this;
         }
@@ -28,7 +28,7 @@ namespace geophile
             return _key;
         }
 
-        SOR spatialObject() const
+        SOR spatialObjectReference() const
         {
             return _spatial_object_reference;
         }

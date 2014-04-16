@@ -6,28 +6,46 @@ using namespace geophile;
 
 
 template <typename SOR>
-void RecordArray<SOR>::add(Z z, const SpatialObject* spatial_object)
+void RecordArray<SOR>::add(Z z, const SOR& sor)
 {
     GEOPHILE_ASSERT(_n < _capacity);
-    _records[_n++].set(z, copySpatialObject(spatial_object));
+    _records[_n++].set(z, sor);
 }
 
 template <typename SOR>
-int32_t RecordArray<SOR>::remove(Z z, int64_t soid)
+SOR RecordArray<SOR>::remove(Z z, int64_t soid)
 {
-    int32_t removed = false;
+    SOR removed;
+    setNull(removed);
     SpatialObjectKey key(z, soid);
-    int32_t remove_position = position(key, true, true);
-    if (remove_position >= 0 && 
-        remove_position < _n) {
+    int32_t remove_position = position(key, 
+                                       /* forward_move */ true, 
+                                       /* include_key */ true);
+    if (remove_position >= 0 && remove_position < _n) {
         Record<SOR>& remove_record = _records[remove_position];
         if (key.compare(_records[remove_position].key()) == 0) {
-            delete remove_record.spatialObject();
+            removed = remove_record.spatialObjectReference();
+            // Delete the spatial object if we've removed the last key
+            // associated with it. THIS DOESN'T WORK IF:
+            // - SOR - const SpatialObject*
+            // - For a given soids, there are multiple copies of the "same" spatial object.
+            // This implementation assumes there is one spatial object associated with all
+            // of the soid's z-values, and that that spatial object needs to be deleted
+            // once the last (z, soid) has been removed.
+            int32_t after_position = remove_position + 1;
+            int32_t before_position = remove_position - 1;
+            if (after_position < _n && _records[after_position].key().soid() == soid) {
+                // Present after removed record
+            } else if (before_position >= 0 && _records[before_position].key().soid() == soid) {
+                // Present before removed record
+            } else {
+                // Not present before or after, so delete the spatial object.
+            }
+            // Remove the record
             memmove(&_records[remove_position],
                     &_records[remove_position + 1],
                     (_n - remove_position - 1) * sizeof(Record<SOR>));
             _n--;
-            removed = true;
         }
     }
     return removed;
@@ -49,17 +67,10 @@ template <typename SOR>
 RecordArray<SOR>::~RecordArray()
 {
     for (int i = 0; i < _n; i++) {
-        delete _records[i].spatialObject();
+        deleteSpatialObject(_records[i].spatialObjectReference());
     }
     delete [] _records;
     delete [] _buffer;
-}
-
-template <typename SOR>
-SpatialObject* RecordArray<SOR>::copySpatialObject(const SpatialObject* spatial_object)
-{
-    serialize(spatial_object);
-    return deserialize();
 }
 
 template <typename SOR>
@@ -74,8 +85,8 @@ RecordArray<SOR>::RecordArray(const SpatialObjectTypes* spatial_object_types, ui
 
 template <typename SOR>
 int32_t RecordArray<SOR>::position(const SpatialObjectKey& key,
-                              int32_t forward_move, 
-                              int32_t include_key) const
+                                   int32_t forward_move, 
+                                   int32_t include_key) const
 {
     int32_t position;
     int32_t lo = 0;
@@ -225,8 +236,7 @@ Record<SOR> RecordArrayCursor<SOR>::neighbor(int32_t forward_move)
     if (_position >= 0 && _position < _record_array.nRecords()) {
         Record<SOR> record = _record_array.at(_position);
         _position += forward_move ? 1 : -1;
-        // Replace record.spatialObject() by a copy for use (and deletion) by caller.
-        current(record.key().z(), _record_array.copySpatialObject(record.spatialObject()));
+        current(record.key().z(), record.spatialObjectReference());
         this->state(IN_USE);
         _start_at = record.key();
     } else {

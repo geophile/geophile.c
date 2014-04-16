@@ -1,3 +1,4 @@
+#include <math.h>
 #include "Space.h"
 #include "Region.h"
 #include "Box2.h"
@@ -87,6 +88,26 @@ void Box2::writeTo(ByteBuffer& byte_buffer) const
     byte_buffer.putDouble(_xhi);
     byte_buffer.putDouble(_ylo);
     byte_buffer.putDouble(_yhi);
+}
+
+void Box2::copyFrom(const SpatialObject* spatial_object)
+{
+    const Box2* box = (const Box2*) spatial_object;
+    _id = box->_id;
+    _xlo = box->_xlo;
+    _xhi = box->_xhi;
+    _ylo = box->_ylo;
+    _yhi = box->_yhi;
+}
+
+bool Box2::isNull() const
+{
+    return isnan(_xlo);
+}
+
+void Box2::setNull()
+{
+    _xlo = NAN;
 }
 
 double Box2::xlo() const

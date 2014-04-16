@@ -15,10 +15,10 @@ namespace geophile
 {
     template <typename SOR> class Cursor;
     template <typename SOR> class OrderedIndex;
+    template <typename SOR> class SpatialObjectArray;
     class SessionMemory;
     class SpatialIndexFilter;
     class SpatialObject;
-    class SpatialObjectArray;
 
     template <typename SOR> class SpatialIndexScan
     {
@@ -32,16 +32,17 @@ namespace geophile
             _cursor->goTo(SpatialObjectKey(z));
             Record<SOR> record = _cursor->next();
             while (!record.eof() && record.key().z().asInteger() < zhi) {
-                SpatialObject* spatial_object = record.spatialObject();
+                SOR spatial_object_reference = record.spatialObjectReference();
+                const SpatialObject* spatial_object = spatialObject(spatial_object_reference);
                 if (_filter->overlap(_query_object, spatial_object)) {
-                    _output->append(spatial_object);
+                    _output->append(spatial_object_reference);
                 } else {
-                    delete record.spatialObject();
+                    // deleteSpatialObject(spatial_object_reference);
                 }
                 record = _cursor->next();
             }
             if (!record.eof()) {
-                delete record.spatialObject();
+                // deleteSpatialObject(record.spatialObjectReference());
             }
         }
 
@@ -53,7 +54,7 @@ namespace geophile
         SpatialIndexScan(OrderedIndex<SOR>* index, 
                          const SpatialObject* query_object,
                          const SpatialIndexFilter* filter, 
-                         SpatialObjectArray* output)
+                         SpatialObjectArray<SOR>* output)
             : _index(index),
             _query_object(query_object),
             _filter(filter),
@@ -65,7 +66,7 @@ namespace geophile
         OrderedIndex<SOR>* _index;
         const SpatialObject* _query_object;
         const SpatialIndexFilter* _filter;
-        SpatialObjectArray* _output;
+        SpatialObjectArray<SOR>* _output;
         Cursor<SOR>* _cursor;
     };
 }

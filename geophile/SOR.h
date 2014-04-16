@@ -3,47 +3,55 @@
 
 /*
  * A spatial object reference (SOR) must support the following operations:
- * - set to null
- * - test for null
- * - assignment (operator=)
- * - construction from a SpatialObject*
+ * - Construction with no arguments (to allow for SOR arrays).
+ * - Initialization given const SpatialObject*.
+ * - set to "null" state.
+ * - test for null state.
  * - return SpatialObject.id()
+ * - return SpatialObject*
+ * - delete SpatialObject
+ * - copy constructor: operator=(const SOR&)
  *
- * To allow both SpatialObject* and classes to work as an SOR, the interface to SORs is
- * based on functions, not member functions. Here is the SOR interface:
- *
- *     bool isNull(const SOR&)
- *     void setNull(const SOR&)
- *     void operator=(const SOR&)
- *     SOR newSpatialObjectReference(const SpatialObject*)
- *     int64_t spatialObjectId(const SOR&)
+ * A SOR can be either a SpatialObject* or a class. For this reason,
+ * the interface to SORs is based on functions, not member functions,
+ * (except for the copy constructor).
  *
  * This module provides the functions allowing SpatialObject* to work as an SOR.
  */
 
 #include "SpatialObject.h"
 
-namespace geophile{
-    inline bool isNull(const SpatialObject* spatial_object)
+namespace geophile
+{
+    inline void initializeSpatialObjectReference(const SpatialObject*& sor, 
+                                                 const SpatialObject* spatial_object)
     {
-        return spatial_object == NULL;
+        sor = spatial_object;
+    }
+
+    inline bool isNull(const SpatialObject* sor)
+    {
+        return sor == NULL;
     }
     
-    inline void setNull(SpatialObject*& spatial_object)
+    inline void setNull(const SpatialObject*& sor)
     {
-        spatial_object = NULL;
+        sor = NULL;
     }
     
-    // void operator= not needed for SpatialObject*}
-    
-    inline const SpatialObject* newSpatialObjectReference(const SpatialObject* spatial_object)
+    inline int64_t spatialObjectId(const SpatialObject* sor)
     {
-        return spatial_object;
+        return sor->id();
     }
-    
-    inline int64_t spatialObjectId(const SpatialObject* spatial_object)
+
+    inline const SpatialObject* spatialObject(const SpatialObject* sor)
     {
-        return spatial_object->id();
+        return sor;
+    }
+
+    inline void deleteSpatialObject(const SpatialObject* sor)
+    {
+        delete (SpatialObject*) sor;
     }
 }
 

@@ -22,6 +22,9 @@ namespace geophile
         virtual int32_t typeId() const = 0;
         virtual void readFrom(ByteBuffer& byteBuffer) = 0;
         virtual void writeTo(ByteBuffer& byteBuffer) const = 0;
+        virtual void copyFrom(const SpatialObject* spatial_object) = 0;
+        virtual bool isNull() const = 0;
+        virtual void setNull() = 0;
         virtual ~SpatialObject() {}
 
     public:

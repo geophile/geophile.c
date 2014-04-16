@@ -1,3 +1,4 @@
+#include <math.h>
 #include "Space.h"
 #include "Region.h"
 #include "Point2.h"
@@ -76,6 +77,24 @@ void Point2::writeTo(ByteBuffer& byte_buffer) const
 {
     byte_buffer.putDouble(_x);
     byte_buffer.putDouble(_y);
+}
+
+void Point2::copyFrom(const SpatialObject* spatial_object)
+{
+    const Point2* point = (const Point2*) spatial_object;
+    _id = point->_id;
+    _x = point->_x;
+    _y = point->_y;
+}
+
+bool Point2::isNull() const
+{
+    return isnan(_x);
+}
+
+void Point2::setNull()
+{
+    _x = NAN;
 }
 
 double Point2::x() const
