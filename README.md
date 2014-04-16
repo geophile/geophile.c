@@ -75,11 +75,11 @@ integers which encode spatial information. This encoding of spatial
 objects as z-values, and the use of z-values as index keys is managed
 by the `SpatialIndex` implementation.
 
-## Example
+## Examples
 
-The source code for this example can be found in
-`test/example1.cpp`. The code relies on
-the following `Index` and `SpatialObject` classes:
+The source code for the examples can be found in `test/example1.cpp`
+and `test/example2.cpp`. This code relies on the following `Index` and
+`SpatialObject` classes:
 
 * `geophile::RecordArray`: An `OrderedIndex` subclass that stores
 index records in memory.
@@ -195,3 +195,19 @@ Sample output:
                 (753559.000000, 180080.000000)
         Average points per query: 5.800000
         Average query time: 0.077600 msec
+
+`example2.cpp` is just like `example1.cpp` except for the way in which
+points are allocated. In example1, the spatial object are of type
+`Point2`, and each `Point2` is dynamically allocated. Once a `Point2`
+is allocated and added to the spatial index, it is owned by the index,
+and deleted with the index. The spatial index is declared as
+`SpatialIndex<const SpatialObject*>`, (`Point2` is a subclass of
+`SpatialObject`). The spatial index is stored in a `RecordArray<const SpatialObject*>`, 
+which encapsulates an array of const
+`SpatialObject*`. I.e., the array elements point to dynamically
+allocated `Point2` objects.
+
+In example2, the spatial index is declared as
+`SpatialIndex<InlinePoint2>`, and `InlinePoint2` has a data member of
+type `Point2`. `RecordArray<InlinePoint2>` encapsulates an array of
+`InlinePoint2`, so there are no dynamically allocated `Point2` objects.
