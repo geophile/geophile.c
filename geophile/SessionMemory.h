@@ -2,8 +2,6 @@
 #define _SESSION_MEMORY_H
 
 #include "OutputArray.h"
-#include "ZArray.h"
-#include "RegionPool.h"
 #include "SessionMemoryBase.h"
 
 namespace geophile

@@ -9,6 +9,7 @@ add_library(geophile SHARED
   Region.cpp
   RegionPool.cpp
   RegionQueue.cpp
+  SessionMemoryBase.cpp
   Space.cpp
   SpatialObjectTypes.cpp
   ZArray.cpp)
@@ -16,16 +17,22 @@ add_library(geophile SHARED
 install(TARGETS geophile DESTINATION lib)
 
 install(FILES 
+  geophile.h
   Box2.h
+  ByteBuffer.h
   ByteBufferOverflowException.h
   ByteBufferUnderflowException.h
   Cursor.h
   GeophileException.h
   OrderedIndex.h
   OutputArray.h
+  OutputArrayBase.h
   Point2.h
   Record.h
+  RegionComparison.h
+  SessionMemoryBase.h
   SessionMemory.h
+  SOR.h
   Space.h
   SpatialIndex.h
   SpatialIndexFilter.h
@@ -33,7 +40,10 @@ install(FILES
   SpatialObject.h
   SpatialObjectKey.h
   SpatialObjectTypes.h
-  DESTINATION include)
+  Z.h
+  ZArray.h
+  util.h
+  DESTINATION include/geophile)
 
 install(TARGETS 
   geophile

@@ -1,9 +1,7 @@
+#include <geophile/geophile.h>
 #include "RecordArray.h"
-#include "SpatialObjectTypes.h"
-#include "ByteBufferOverflowException.h"
 
 using namespace geophile;
-
 
 template <typename SOR>
 void RecordArray<SOR>::add(Z z, const SOR& sor)

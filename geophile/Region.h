@@ -44,13 +44,6 @@ namespace geophile
         uint64_t _hi[Space::MAX_DIMENSIONS];
         uint32_t _x_bit_position[Space::MAX_DIMENSIONS];
     };
-
-    typedef enum 
-    { 
-        REGION_OUTSIDE_OBJECT, 
-        REGION_INSIDE_OBJECT, 
-        REGION_OVERLAPS_OBJECT 
-    } RegionComparison;
 }
 
 #endif

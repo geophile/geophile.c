@@ -5,10 +5,10 @@
 #include "Space.h"
 #include "SpatialIndex.h"
 #include "SpatialObject.h"
-#include "ZArray.h"
 #include "OrderedIndex.h"
 #include "SessionMemory.h"
 #include "SpatialIndexScan.h"
+#include "ZArray.h"
 #include "util.h"
 
 namespace geophile

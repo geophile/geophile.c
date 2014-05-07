@@ -1,17 +1,7 @@
 #include <stdio.h>
 #include <math.h>
 
-#include "Space.h"
-#include "SpatialObjectTypes.h"
-#include "Point2.h"
-#include "Box2.h"
-#include "InlinePoint2.h"
-#include "SessionMemory.h"
-#include "SpatialIndex.h"
-#include "SpatialIndexFilter.h"
-#include "SpatialIndexScan.h"
-#include "OutputArray.h"
-#include "ZArray.h"
+#include <geophile/geophile.h>
 
 #include "RecordArray.h"
 #include "Stopwatch.h"
@@ -66,13 +56,13 @@ static Space* createSpace()
     return space;
 }
 
-static OrderedIndex<InlinePoint2>* createIndex()
+static OrderedIndex<const SpatialObject*>* createIndex()
 {
-    return new RecordArray<InlinePoint2>(&spatial_object_types, N_POINTS);
+    return new RecordArray<const SpatialObject*>(&spatial_object_types, N_POINTS);
 }
 
-static void loadRandomPoints(SpatialIndex<InlinePoint2>* spatial_index, 
-                             SessionMemory<InlinePoint2>* memory)
+static void loadRandomPoints(SpatialIndex<const SpatialObject*>* spatial_index, 
+                             SessionMemory<const SpatialObject*>* memory)
 {
     srand(419);
     stopwatch.reset();
@@ -80,9 +70,10 @@ static void loadRandomPoints(SpatialIndex<InlinePoint2>* spatial_index,
     for (uint32_t id = 0; id < N_POINTS; id++) {
         double x = rand() % X_MAX;
         double y = rand() % Y_MAX;
-        Point2 point(x, y);
-        point.id(id);
-        spatial_index->add(InlinePoint2(point), memory);
+        // Add a point in the heap, that will be owned by the index.
+        Point2* point = new Point2(x, y);
+        point->id(id);
+        spatial_index->add(point, memory);
     }
     spatial_index->freeze();
     stopwatch.stop();
@@ -91,7 +82,8 @@ static void loadRandomPoints(SpatialIndex<InlinePoint2>* spatial_index,
            N_POINTS, sec, N_POINTS / sec);
 }
 
-static void runQueries(SpatialIndex<InlinePoint2>* spatial_index, SessionMemory<InlinePoint2>* memory)
+static void runQueries(SpatialIndex<const SpatialObject*>* spatial_index, 
+                       SessionMemory<const SpatialObject*>* memory)
 {
     // Select query size based on the desired result size. Use square queries.
     uint32_t x_width = 
@@ -109,10 +101,10 @@ static void runQueries(SpatialIndex<InlinePoint2>* spatial_index, SessionMemory<
         printf("Query %d: (%f : %f, %f : %f)\n", q, x_lo, x_hi, y_lo, y_hi);
         PointFilter filter;
         spatial_index->findOverlapping(&box, &filter, memory);
-        OutputArray<InlinePoint2>* output = 
-            (OutputArray<InlinePoint2>*) memory->output();
+        OutputArray<const SpatialObject*>* output = 
+            (OutputArray<const SpatialObject*>*) memory->output();
         for (uint32_t j = 0; j < output->length(); j++) {
-            Point2* p = (Point2*) output->at(j).point2();
+            Point2* p = (Point2*) output->at(j);
             printf("        (%f, %f)\n", p->x(), p->y());
         }
         total_points += output->length();
@@ -134,10 +126,10 @@ int main(int32_t argc, const char** argv)
 {
     setup();
     Space* space = createSpace();
-    OrderedIndex<InlinePoint2>* index = createIndex();
-    SpatialIndex<InlinePoint2>* spatial_index = 
-        new SpatialIndex<InlinePoint2>(space, index);
-    SessionMemory<InlinePoint2> memory;
+    OrderedIndex<const SpatialObject*>* index = createIndex();
+    SpatialIndex<const SpatialObject*>* spatial_index = 
+        new SpatialIndex<const SpatialObject*>(space, index);
+    SessionMemory<const SpatialObject*> memory;
     loadRandomPoints(spatial_index, &memory);
     runQueries(spatial_index, &memory);
     delete index;

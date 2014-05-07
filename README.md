@@ -77,8 +77,8 @@ by the `SpatialIndex` implementation.
 
 ## Examples
 
-The source code for the examples can be found in `test/example1.cpp`
-and `test/example2.cpp`. This code relies on the following `Index` and
+The source code for the examples can be found in `examples/example1.cpp`
+and `examples/example2.cpp`. This code relies on the following `Index` and
 `SpatialObject` classes:
 
 * `geophile::RecordArray`: An `OrderedIndex` subclass that stores
@@ -115,7 +115,7 @@ An `OrderedIndex` is created, using the `RecordArray` implementation:
         OrderedIndex* index = createIndex();
 
 `RecordArray` is an example of an `OrderedIndex` implementation, and
-is included in the `test` directory. It is not intended for commerical
+is included in the `examples` directory. It is not intended for commerical
 use, and so is not included in `libgeophile.so`.
 
 A `SpatialIndex` is created:

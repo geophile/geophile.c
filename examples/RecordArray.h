@@ -1,13 +1,9 @@
 #ifndef _RECORDARRAY_H
 #define _RECORDARRAY_H
 
-#include "OrderedIndex.h"
-#include "Record.h"
-#include "ByteBuffer.h"
-#include "ByteBufferOverflowException.h"
-#include "Cursor.h"
-#include "RecordArray.h"
-#include "SpatialObjectTypes.h"
+#include "geophile/geophile.h"
+
+typedef uint8_t byte;
 
 namespace geophile
 {

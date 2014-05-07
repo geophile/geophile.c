@@ -1,7 +1,7 @@
 #ifndef _INLINE_POINT2_H
 #define _INLINE_POINT2_H
 
-#include "Point2.h"
+#include <geophile/Point2.h>
 
 namespace geophile
 {
@@ -84,4 +84,3 @@ namespace geophile
 }
 
 #endif
-

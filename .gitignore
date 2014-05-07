@@ -1,0 +1,45 @@
+# C++
+
+# Object files
+*.o
+*.ko
+*.obj
+*.elf
+
+# Libraries
+*.lib
+*.a
+
+# Shared objects (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Executables
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
+
+#----------------------------------------------------------------------
+
+# cmake
+
+CMakeCache.txt
+CMakeFiles
+Makefile
+cmake_install.cmake
+install_manifest.txt
+
+#----------------------------------------------------------------------
+
+# My settings
+
+# Notes
+work_in_progress
+
+# Emacs
+*~

@@ -2,7 +2,7 @@
 #define _SPATIAL_OBJECT_H
 
 #include <stdint.h>
-#include "Region.h"
+#include "RegionComparison.h"
 
 namespace geophile
 {
