@@ -768,11 +768,6 @@ static void testIndexOperations()
     }
 }
 
-static void testIndex()
-{
-    testIndexCreationAndDestruction();
-    testIndexOperations();
-}
 
 //----------------------------------------------------------------------
 
@@ -1096,7 +1091,6 @@ int main(int32_t argc, const char** argv)
     RUN_TEST(testByteBuffer);
     RUN_TEST(testIndexCreationAndDestruction);
     RUN_TEST(testIndexOperations);
-    RUN_TEST(testIndex);
     RUN_TEST(testCursor);
     RUN_TEST(testRetrieval);
 }

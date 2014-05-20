@@ -234,7 +234,7 @@ Record<SOR> RecordArrayCursor<SOR>::neighbor(int32_t forward_move)
     if (_position >= 0 && _position < _record_array.nRecords()) {
         Record<SOR> record = _record_array.at(_position);
         _position += forward_move ? 1 : -1;
-        current(record.key().z(), record.spatialObjectReference());
+        this->current(record.key().z(), record.spatialObjectReference());
         this->state(IN_USE);
         _start_at = record.key();
     } else {
