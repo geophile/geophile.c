@@ -1,8 +1,15 @@
 cmake_minimum_required(VERSION 2.8)
 
 include_directories(../geophile)
-link_directories($(geophile_BINARY_DIR)/geophile)
+link_directories($(geophile_BINARY_DIR)/geophile $(geophile_BINARY_DIR)/geophiletest)
 
-add_executable(unittest
-  unittest.cpp)
-target_link_libraries(unittest geophile)
+# index_unittest
+add_executable(index_unittest
+  index_unittest.cpp)
+target_link_libraries(index_unittest geophiletest geophile)
+
+# core_unittest
+add_executable(core_unittest
+  core_unittest.cpp)
+target_link_libraries(core_unittest geophile)
+

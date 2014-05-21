@@ -14,7 +14,11 @@ add_library(geophile SHARED
   SpatialObjectTypes.cpp
   ZArray.cpp)
 
-install(TARGETS geophile DESTINATION lib)
+add_library(geophiletest SHARED
+  TestSpatialObject.cpp
+  testbase.cpp)
+
+# install(TARGETS geophile geophiletest DESTINATION lib)
 
 install(FILES 
   geophile.h
@@ -43,8 +47,13 @@ install(FILES
   Z.h
   ZArray.h
   util.h
+  # Testing
+  OrderedIndexFactory.h
+  TestSpatialObject.h
+  testbase.h
   DESTINATION include/geophile)
 
 install(TARGETS 
   geophile
+  geophiletest
   LIBRARY DESTINATION lib)

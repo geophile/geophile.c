@@ -8,6 +8,9 @@ using namespace geophile;
 template <typename SOR>
 void RecordArray<SOR>::add(Z z, const SOR& sor)
 {
+    if (_n == _capacity) {
+        growArray();
+    }
     GEOPHILE_ASSERT(_n < _capacity);
     _records[_n++].set(z, sor);
 }
@@ -74,11 +77,11 @@ RecordArray<SOR>::~RecordArray()
 }
 
 template <typename SOR>
-RecordArray<SOR>::RecordArray(const SpatialObjectTypes* spatial_object_types, uint32_t capacity)
+RecordArray<SOR>::RecordArray(const SpatialObjectTypes* spatial_object_types)
     : OrderedIndex<SOR>(spatial_object_types),
-      _capacity(capacity),
       _n(0),
-      _records(new Record<SOR>[capacity]),
+      _capacity(INITIAL_CAPACITY),
+      _records(new Record<SOR>[INITIAL_BUFFER_SIZE]),
       _buffer_size(INITIAL_BUFFER_SIZE),
       _buffer(new byte[INITIAL_BUFFER_SIZE])
 {}
@@ -152,6 +155,17 @@ void RecordArray<SOR>::growBuffer()
     delete [] _buffer;
     _buffer = new_buffer;
     _buffer_size = new_buffer_size;
+}
+
+template <typename SOR>
+void RecordArray<SOR>::growArray()
+{
+    int32_t new_capacity = _capacity * 2;
+    Record<SOR>* new_records = new Record<SOR>[new_capacity];
+    memcpy(new_records, _records, _capacity * sizeof(Record<SOR>));
+    delete [] _records;
+    _records = new_records;
+    _capacity = new_capacity;
 }
 
 template <typename SOR>
