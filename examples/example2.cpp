@@ -59,7 +59,7 @@ static Space* createSpace()
 
 static OrderedIndex<InlinePoint2>* createIndex()
 {
-    return new RecordArray<InlinePoint2>(&spatial_object_types, N_POINTS);
+    return new RecordArray<InlinePoint2>(&spatial_object_types);
 }
 
 static void loadRandomPoints(SpatialIndex<InlinePoint2>* spatial_index, 

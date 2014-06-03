@@ -1,9 +1,11 @@
 #ifndef _RECORDARRAY_H
 #define _RECORDARRAY_H
 
-#include "geophile/geophile.h"
-
-typedef uint8_t byte;
+#include <geophile/OrderedIndex.h>
+#include <geophile/Record.h>
+#include <geophile/Cursor.h>
+#include <geophile/SpatialObjectTypes.h>
+#include <geophile/ByteBuffer.h>
 
 namespace geophile
 {
@@ -29,7 +31,7 @@ namespace geophile
                          int32_t include_key) const;
         uint32_t nRecords() const;
         Record<SOR> at(int32_t position) const;
-        RecordArray(const SpatialObjectTypes* spatial_object_types, uint32_t capacity);
+        RecordArray(const SpatialObjectTypes* spatial_object_types);
        
     private:
         // serialize and deserialize use _buffer (which is why this class
@@ -37,16 +39,18 @@ namespace geophile
         void serialize(const SpatialObject* spatial_object);        
         SpatialObject* deserialize();
         void growBuffer();
+        void growArray();
         
     private:
         static int32_t recordCompare(const void* x, const void* y);
         
     private:
+        static const uint32_t INITIAL_CAPACITY = 1000;
         static const uint32_t INITIAL_BUFFER_SIZE = 1000;
         
     private:
-        uint32_t _capacity;
         int32_t _n;
+        int32_t _capacity;
         Record<SOR>* _records;
         uint32_t _buffer_size;
         byte* _buffer;

@@ -58,7 +58,7 @@ static Space* createSpace()
 
 static OrderedIndex<const SpatialObject*>* createIndex()
 {
-    return new RecordArray<const SpatialObject*>(&spatial_object_types, N_POINTS);
+    return new RecordArray<const SpatialObject*>(&spatial_object_types);
 }
 
 static void loadRandomPoints(SpatialIndex<const SpatialObject*>* spatial_index, 

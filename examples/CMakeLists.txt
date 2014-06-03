@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
-include_directories($<CMAKE_INSTALL_PREFIX>/include)
+include_directories($<CMAKE_INSTALL_PREFIX>/geophile/include)
 link_directories($(geophile_BINARY_DIR)/geophile)
 
 # example1

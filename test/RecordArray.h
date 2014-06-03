@@ -3,10 +3,7 @@
 
 #include "OrderedIndex.h"
 #include "Record.h"
-#include "ByteBuffer.h"
-#include "ByteBufferOverflowException.h"
 #include "Cursor.h"
-#include "RecordArray.h"
 #include "SpatialObjectTypes.h"
 
 namespace geophile

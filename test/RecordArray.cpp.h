@@ -1,7 +1,7 @@
-#include "RecordArray.h"
 #include "SpatialObjectTypes.h"
 #include "ByteBuffer.h"
 #include "ByteBufferOverflowException.h"
+#include "RecordArray.h"
 
 using namespace geophile;
 
@@ -81,7 +81,7 @@ RecordArray<SOR>::RecordArray(const SpatialObjectTypes* spatial_object_types)
     : OrderedIndex<SOR>(spatial_object_types),
       _n(0),
       _capacity(INITIAL_CAPACITY),
-      _records(new Record<SOR>[INITIAL_BUFFER_SIZE]),
+      _records(new Record<SOR>[INITIAL_CAPACITY]),
       _buffer_size(INITIAL_BUFFER_SIZE),
       _buffer(new byte[INITIAL_BUFFER_SIZE])
 {}
@@ -180,7 +180,6 @@ void RecordArray<SOR>::serialize(const SpatialObject* spatial_object)
             byte_buffer.flip();
             serialized = true;
         } catch (ByteBufferOverflowException e) {
-            _buffer_size = 0; // No need to copy current contents when growing
             growBuffer();
         }
     } while (!serialized);

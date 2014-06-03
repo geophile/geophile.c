@@ -7,6 +7,8 @@
 #include "Z.h"
 #include "ZArray.h"
 #include "ByteBuffer.h"
+#include "ByteBufferOverflowException.h"
+#include "ByteBufferUnderflowException.h"
 #include "SessionMemory.h"
 #include "OutputArray.h"
 
@@ -407,7 +409,7 @@ static void testDecomposition()
 
 // ByteBuffer
 
-static void byteBuffer()
+static void byteBufferReadWrite()
 {
     byte bytes[1000];
     ByteBuffer buffer(bytes, 1000);
@@ -473,12 +475,53 @@ static void byteBuffer()
     ASSERT_EQ(8, buffer.position());
     buffer.reset();
     ASSERT_EQ(4, buffer.position());
-    // TODO: Check exceptions
+}
+
+static void byteBufferOverflow()
+{
+    for (int32_t buffer_size = 1; buffer_size <= 20; buffer_size++) {
+        byte bytes[buffer_size];
+        ByteBuffer buffer(bytes, buffer_size);
+        int32_t bytes_written = 0;
+        try {
+            while (true) {
+                buffer.putInt32(1);
+                bytes_written += sizeof(int32_t);
+            }
+        } catch (ByteBufferOverflowException e) {
+        }
+        ASSERT_TRUE(bytes_written <= buffer_size);
+        ASSERT_EQ(sizeof(int32_t) * (buffer_size / sizeof(int32_t)), bytes_written);
+    }
+}
+
+static void byteBufferUnderflow()
+{
+    for (int32_t buffer_size = 1; buffer_size <= 20; buffer_size++) {
+        byte bytes[buffer_size];
+        ByteBuffer buffer(bytes, buffer_size);
+        int32_t n_ints = buffer_size / sizeof(int32_t);
+        for (int i = 0; i < n_ints; i++) {
+            buffer.putInt32(1);
+        }
+        buffer.flip();
+        for (int i = 0; i < n_ints; i++) {
+            buffer.getInt32();
+        }
+        try {
+            buffer.getInt32();
+            ASSERT_TRUE(false);
+        } catch (ByteBufferUnderflowException e) {
+            // expected
+        }
+    }
 }
 
 static void testByteBuffer()
 {
-    byteBuffer();
+    byteBufferReadWrite();
+    byteBufferOverflow();
+    byteBufferUnderflow();
 }
 
 //----------------------------------------------------------------------
