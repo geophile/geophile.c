@@ -1,10 +1,12 @@
 #include <assert.h>
 #include <stdio.h>
 
-#include "testbase.h"
+#include "geophile/testbase.h"
 #include "RecordArray.h"
 
 using namespace geophile;
+
+static SessionMemory<const SpatialObject*> memory;
 
 class RecordArrayFactory : public OrderedIndexFactory<const geophile::SpatialObject*>
 {
@@ -12,7 +14,7 @@ public:
     virtual OrderedIndex<const SpatialObject*>* newIndex
     (const SpatialObjectTypes* spatial_object_types) const
     {
-        return new RecordArray<const SpatialObject*>(spatial_object_types);
+        return new RecordArray<const SpatialObject*>(spatial_object_types, &memory);
     }
 };
 

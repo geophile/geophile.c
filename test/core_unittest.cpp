@@ -1,16 +1,16 @@
 #include <assert.h>
 #include <stdio.h>
 
-#include "Space.h"
-#include "Point2.h"
-#include "Box2.h"
-#include "Z.h"
-#include "ZArray.h"
-#include "ByteBuffer.h"
-#include "ByteBufferOverflowException.h"
-#include "ByteBufferUnderflowException.h"
-#include "SessionMemory.h"
-#include "OutputArray.h"
+#include "geophile/Space.h"
+#include "geophile/Point2.h"
+#include "geophile/Box2.h"
+#include "geophile/Z.h"
+#include "geophile/ZArray.h"
+#include "geophile/ByteBuffer.h"
+#include "geophile/ByteBufferOverflowException.h"
+#include "geophile/ByteBufferUnderflowException.h"
+#include "geophile/SessionMemory.h"
+#include "geophile/OutputArray.h"
 
 #include "RecordArray.h"
 #include "TestSpatialObject.h"

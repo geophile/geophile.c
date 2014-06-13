@@ -41,7 +41,8 @@ namespace geophile
         }
 
         OutputArray()
-            : _contents(new SOR[INITIAL_CAPACITY])
+            : OutputArrayBase(),
+              _contents(new SOR[INITIAL_CAPACITY])
         {}
 
     public: // Used in testing

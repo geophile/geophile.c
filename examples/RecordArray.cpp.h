@@ -77,8 +77,8 @@ RecordArray<SOR>::~RecordArray()
 }
 
 template <typename SOR>
-RecordArray<SOR>::RecordArray(const SpatialObjectTypes* spatial_object_types)
-    : OrderedIndex<SOR>(spatial_object_types),
+RecordArray<SOR>::RecordArray(const SpatialObjectTypes* spatial_object_types, SessionMemory<SOR>* memory)
+    : OrderedIndex<SOR>(spatial_object_types, memory),
       _n(0),
       _capacity(INITIAL_CAPACITY),
       _records(new Record<SOR>[INITIAL_CAPACITY]),
@@ -180,7 +180,6 @@ void RecordArray<SOR>::serialize(const SpatialObject* spatial_object)
             byte_buffer.flip();
             serialized = true;
         } catch (ByteBufferOverflowException e) {
-            _buffer_size = 0; // No need to copy current contents when growing
             growBuffer();
         }
     } while (!serialized);

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
-include_directories(../geophile)
+include_directories(../include)
 link_directories($(geophile_BINARY_DIR)/geophile $(geophile_BINARY_DIR)/geophiletest)
 
 # index_unittest

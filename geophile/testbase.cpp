@@ -595,7 +595,6 @@ static void testRetrievalRandomized(const OrderedIndexFactory<const SpatialObjec
     OrderedIndex<const SpatialObject*>* index = index_factory->newIndex(&SPATIAL_OBJECT_TYPES);
     SpatialIndex<const SpatialObject*>* spatial_index = 
         new SpatialIndex<const SpatialObject*>(space, index);
-    OutputArray<const SpatialObject*> output;
     SessionMemory<const SpatialObject*> memory;
     int64_t id = 0;
     for (double x = 0; x < X_MAX; x += 10) {

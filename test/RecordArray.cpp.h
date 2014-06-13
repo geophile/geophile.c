@@ -1,6 +1,6 @@
-#include "SpatialObjectTypes.h"
-#include "ByteBuffer.h"
-#include "ByteBufferOverflowException.h"
+#include "geophile/SpatialObjectTypes.h"
+#include "geophile/ByteBuffer.h"
+#include "geophile/ByteBufferOverflowException.h"
 #include "RecordArray.h"
 
 using namespace geophile;
@@ -77,8 +77,8 @@ RecordArray<SOR>::~RecordArray()
 }
 
 template <typename SOR>
-RecordArray<SOR>::RecordArray(const SpatialObjectTypes* spatial_object_types)
-    : OrderedIndex<SOR>(spatial_object_types),
+RecordArray<SOR>::RecordArray(const SpatialObjectTypes* spatial_object_types, SessionMemory<SOR>* memory)
+    : OrderedIndex<SOR>(spatial_object_types, memory),
       _n(0),
       _capacity(INITIAL_CAPACITY),
       _records(new Record<SOR>[INITIAL_CAPACITY]),

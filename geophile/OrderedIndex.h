@@ -3,10 +3,13 @@
 
 #include "Z.h"
 #include "SpatialObjectTypes.h"
+#include "ByteBuffer.h"
+#include "ByteBufferOverflowException.h"
 
 namespace geophile
 {
     template <typename SOR> class Cursor;
+    template <typename SOR> class SessionMemory;
     class SpatialObject;
 
     /*
@@ -24,7 +27,7 @@ namespace geophile
      * accomplished using a Cursor, obtained by cursor().
      */
     template <typename SOR> // SOR: Spatial Object Reference
-    class OrderedIndex
+        class OrderedIndex
     {
     public:
         /*
@@ -57,11 +60,27 @@ namespace geophile
         /*
          * Constructor. 
          */
-        OrderedIndex(const SpatialObjectTypes* spatial_object_types)
-            : _spatial_object_types(spatial_object_types)
+        OrderedIndex(const SpatialObjectTypes* spatial_object_types, SessionMemory<SOR>* memory)
+            : _memory(memory),
+              _spatial_object_types(spatial_object_types)
         {}
 
     protected:
+        /*
+         * Serializes spatial_object.
+         */
+        ByteBuffer serialize(const SpatialObject* spatial_object)
+        {
+            ByteBuffer buffer = _memory->byteBuffer();
+            int32_t serialized = false;
+            try {
+                spatial_object->writeTo(buffer);
+                serialized = true;
+            } catch (ByteBufferOverflowException e) {
+                _memory->ensureBufferCapacity(_memory->bufferCapacity() * 2);
+            }
+        }
+
         /*
          * Used by OrderedIndex subclasses to create a new
          * SpatialObject of the type registered with the given
@@ -74,6 +93,7 @@ namespace geophile
 
     private:
         const SpatialObjectTypes* _spatial_object_types;
+        SessionMemory<SOR>* _memory;
     };
 }
 

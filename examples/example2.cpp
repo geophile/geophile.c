@@ -16,6 +16,7 @@ static uint32_t N_QUERIES = 5;
 static uint32_t DESIRED_RESULT_SIZE = 5;
 static uint32_t MAX_REGIONS = 8;
 static SpatialObjectTypes spatial_object_types;
+static SessionMemory<InlinePoint2> memory;
 static Stopwatch stopwatch;
 
 class PointFilter : public SpatialIndexFilter
@@ -59,7 +60,7 @@ static Space* createSpace()
 
 static OrderedIndex<InlinePoint2>* createIndex()
 {
-    return new RecordArray<InlinePoint2>(&spatial_object_types);
+    return new RecordArray<InlinePoint2>(&spatial_object_types, &memory);
 }
 
 static void loadRandomPoints(SpatialIndex<InlinePoint2>* spatial_index, 

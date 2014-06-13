@@ -42,13 +42,15 @@ namespace geophile
         virtual ~SessionMemory()
         {
             delete _output;
+            _output = NULL;
         }
 
         /*
          * Constructor
          */
         SessionMemory()
-            : _output(new OutputArray<SOR>())
+            : SessionMemoryBase(),
+              _output(new OutputArray<SOR>())
         {}
 
     private:

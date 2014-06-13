@@ -1,7 +1,7 @@
 #ifndef _TESTSPATIALOBJECT_H
 #define _TESTSPATIALOBJECT_H
 
-#include "SpatialObject.h"
+#include "geophile/SpatialObject.h"
 
 // Dummy SpatialObject for testing index
 

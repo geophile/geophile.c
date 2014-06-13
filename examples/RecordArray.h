@@ -31,7 +31,7 @@ namespace geophile
                          int32_t include_key) const;
         uint32_t nRecords() const;
         Record<SOR> at(int32_t position) const;
-        RecordArray(const SpatialObjectTypes* spatial_object_types);
+        RecordArray(const SpatialObjectTypes* spatial_object_types, SessionMemory<SOR>* memory);
        
     private:
         // serialize and deserialize use _buffer (which is why this class
