@@ -32,12 +32,12 @@ namespace geophile
             return _spatial_object == sop._spatial_object;
         }
 
-    public: // SpatialObjectPointer interface
-
         const SpatialObject* spatialObject() const
         {
             return _spatial_object;
         }
+
+    public: // SpatialObjectPointer interface
 
         SpatialObjectPointer(const SpatialObjectPointer& sop)
             : _spatial_object(sop._spatial_object)

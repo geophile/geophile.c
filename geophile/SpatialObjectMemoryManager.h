@@ -8,7 +8,7 @@ namespace geophile
     {
     public:
         virtual SOR newSpatialObjectReference(const SpatialObject*) const = 0;
-        virtual const SpatialObject* spatialObject(const SOR&) const = 0;
+        virtual void cleanup(SOR sor) const = 0;
     };
 }
 

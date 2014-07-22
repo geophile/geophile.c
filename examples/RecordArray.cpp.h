@@ -69,7 +69,7 @@ template <class SOR>
 RecordArray<SOR>::~RecordArray()
 {
     for (int i = 0; i < _n; i++) {
-        delete this->_spatial_object_memory_manager->spatialObject(_records[i].spatialObjectReference());
+        this->_spatial_object_memory_manager->cleanup(_records[i].spatialObjectReference());
     }
     delete [] _records;
     delete [] _buffer;

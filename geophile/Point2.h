@@ -24,6 +24,17 @@ namespace geophile
         virtual bool isNull() const;
         virtual void setNull();
 
+    public: // SpatialObject reference interface
+        int64_t spatialObjectId() const;
+        /* Already declared by SpatialObject
+        bool isNull() const;
+        void setNull();
+        */
+        void operator=(const Point2& p);
+        bool operator==(const Point2& p);
+        const SpatialObject* spatialObject() const;
+        Point2(const SpatialObject* spatial_object);
+
     public: // Point2
         double x() const;
         double y() const;

@@ -81,6 +81,7 @@ void Point2::writeTo(ByteBuffer& byte_buffer) const
 
 void Point2::copyFrom(const SpatialObject* spatial_object)
 {
+    // TODO: It would be nice to check the spatial_object's typeid
     const Point2* point = (const Point2*) spatial_object;
     _id = point->_id;
     _x = point->_x;
@@ -95,6 +96,28 @@ bool Point2::isNull() const
 void Point2::setNull()
 {
     _x = NAN;
+}
+
+int64_t Point2::spatialObjectId() const
+{
+    return id();
+}
+
+void Point2::operator=(const Point2& p)
+{
+    _id = p._id;
+    _x = p._x;
+    _y = p._y;
+}
+
+bool Point2::operator==(const Point2& p)
+{
+    return _id == p._id && _x == p._x && _y == p._y;
+}
+
+const SpatialObject* Point2::spatialObject() const
+{
+    return this;
 }
 
 double Point2::x() const
@@ -118,3 +141,12 @@ Point2::Point2()
       _x(0),
       _y(0)
 {}
+
+Point2::Point2(const SpatialObject* spatial_object)
+{
+    // TODO: assert that spatial_object is a Point2
+    const Point2* p = (const Point2*) spatial_object;
+    _id = p->id();
+    _x = p->x();
+    _y = p->y();
+}

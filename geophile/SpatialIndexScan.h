@@ -9,7 +9,6 @@
 #include "SessionMemory.h"
 #include "SpatialIndexFilter.h"
 #include "SpatialObjectKey.h"
-#include "SpatialObjectMemoryManager.h"
 #include "OutputArray.h"
 
 namespace geophile
@@ -33,8 +32,7 @@ namespace geophile
             Record<SOR> record = _cursor->next();
             while (!record.eof() && record.key().z().asInteger() < zhi) {
                 SOR spatial_object_reference = record.spatialObjectReference();
-                const SpatialObject* spatial_object = 
-                    _spatial_object_memory_manager->spatialObject(spatial_object_reference);
+                const SpatialObject* spatial_object = spatial_object_reference.spatialObject();
                 if (_filter->overlap(_query_object, spatial_object)) {
                     _output->append(spatial_object_reference);
                 }
@@ -55,7 +53,6 @@ namespace geophile
             : _index(index),
             _query_object(query_object),
             _filter(filter),
-            _spatial_object_memory_manager(spatial_object_memory_manager),
             _output(output),
             _cursor(NULL)
             {}
@@ -64,7 +61,6 @@ namespace geophile
         OrderedIndex<SOR>* _index;
         const SpatialObject* _query_object;
         const SpatialIndexFilter* _filter;
-        SpatialObjectMemoryManager<SOR>* _spatial_object_memory_manager;
         OutputArray<SOR>* _output;
         Cursor<SOR>* _cursor;
     };

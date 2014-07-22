@@ -28,7 +28,7 @@ namespace geophile
         virtual ~SpatialObject() {}
 
     public:
-        static const int64_t UNINITIALIZED_ID = -1LL;
+        static const int64_t UNINITIALIZED_ID = -1;
     };
 }
 

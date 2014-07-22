@@ -288,9 +288,9 @@ static void removeAll(OrderedIndex<SpatialObjectPointer>* index,
             SpatialObjectPointer removed = index->remove(int_to_z(expected), id);
             ASSERT_TRUE(!removed.isNull());
             if (target) {
-                ASSERT_EQ(target, spatial_object_memory_manager.spatialObject(removed));
+                ASSERT_EQ(target, removed.spatialObject());
             } else {
-                target = spatial_object_memory_manager.spatialObject(removed);
+                target = removed.spatialObject();
             }
             removed = index->remove(int_to_z(expected + GAP / 2), id);
             ASSERT_TRUE(removed.isNull());
@@ -545,7 +545,7 @@ static void dump(const char* label, OutputArray<SpatialObjectPointer>* array)
 {
     printf("%s - %d:\n", label, array->length());
     for (int i = 0; i < array->length(); i++) {
-        Point2* point = (Point2*) spatial_object_memory_manager.spatialObject(array->at(i));
+        Point2* point = (Point2*) array->at(i).spatialObject();
         printf("    (%f, %f)\n", point->x(), point->y());
     }
 }
@@ -581,7 +581,7 @@ static void testRetrieval(SpatialIndex<SpatialObjectPointer>* spatial_index,
     compare(expected, actual);
     memory->clearOutput();
     for (uint32_t i = 0; i < expected->length(); i++) {
-        delete (SpatialObject*) spatial_object_memory_manager.spatialObject(expected->at(i));
+        spatial_object_memory_manager.cleanup(expected->at(i));
     }
     delete expected;
     delete scan;

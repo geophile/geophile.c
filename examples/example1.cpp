@@ -9,16 +9,17 @@
 
 using namespace geophile;
 
-static int64_t X_MAX = 1000000;
-static int64_t Y_MAX = 1000000;
-static uint32_t N_POINTS = 1000000;
-static uint32_t N_QUERIES = 5;
-static uint32_t DESIRED_RESULT_SIZE = 5;
-static uint32_t MAX_REGIONS = 8;
+static const int64_t X_MAX = 1000000;
+static const int64_t Y_MAX = 1000000;
+static const uint32_t N_POINTS = 1000000;
+static const uint32_t N_QUERIES = 5;
+static const uint32_t DESIRED_RESULT_SIZE = 5;
+static const uint32_t MAX_REGIONS = 8;
 static SpatialObjectTypes spatial_object_types;
 static SessionMemory<SpatialObjectPointer> memory;
 static InMemorySpatialObjectMemoryManager spatial_object_memory_manager;
 static Stopwatch stopwatch;
+static Point2* points[N_POINTS];
 
 class PointFilter : public SpatialIndexFilter
 {
@@ -79,12 +80,20 @@ static void loadRandomPoints(SpatialIndex<SpatialObjectPointer>* spatial_index,
         Point2* point = new Point2(x, y);
         point->id(id);
         spatial_index->add(point, memory);
+        points[id] = point;
     }
     spatial_index->freeze();
     stopwatch.stop();
     double sec = stopwatch.usec() / 1000000.0;
     printf("Loaded %d points in %f sec (%f points/sec)\n",
            N_POINTS, sec, N_POINTS / sec);
+}
+
+static void deletePoints()
+{
+    for (uint32_t id = 0; id < N_POINTS; id++) {
+        delete points[id];
+    }
 }
 
 static void runQueries(SpatialIndex<SpatialObjectPointer>* spatial_index, 
@@ -109,7 +118,7 @@ static void runQueries(SpatialIndex<SpatialObjectPointer>* spatial_index,
         OutputArray<SpatialObjectPointer>* output = 
             (OutputArray<SpatialObjectPointer>*) memory->output();
         for (uint32_t j = 0; j < output->length(); j++) {
-            Point2* p = (Point2*) spatial_object_memory_manager.spatialObject(output->at(j));
+            Point2* p = (Point2*) output->at(j).spatialObject();
             printf("        (%f, %f)\n", p->x(), p->y());
         }
         total_points += output->length();
@@ -140,4 +149,5 @@ int main(int32_t argc, const char** argv)
     delete index;
     delete space;
     delete spatial_index;
+    deletePoints();
 }

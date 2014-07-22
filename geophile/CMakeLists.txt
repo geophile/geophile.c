@@ -28,6 +28,7 @@ install(FILES
   ByteBufferUnderflowException.h
   Cursor.h
   GeophileException.h
+  InlineSpatialObjectMemoryManager.h
   InMemorySpatialObjectMemoryManager.h
   OrderedIndex.h
   OutputArray.h
