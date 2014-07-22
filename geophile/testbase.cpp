@@ -476,6 +476,13 @@ static void testCursor(OrderedIndex<SpatialObjectPointer>* index, int32_t n)
             }
         }
     }
+    // Delete spatial objects
+    {
+        cursor->goTo(SpatialObjectKey(zvalue(Z::Z_MIN, 0)));
+        while (!(record = cursor->next()).eof()) {
+            delete (SpatialObject*) record.spatialObjectReference().spatialObject();
+        }
+    }
     delete cursor;
 }
 
@@ -581,7 +588,7 @@ static void testRetrieval(SpatialIndex<SpatialObjectPointer>* spatial_index,
     compare(expected, actual);
     memory->clearOutput();
     for (uint32_t i = 0; i < expected->length(); i++) {
-        spatial_object_memory_manager.cleanup(expected->at(i));
+        delete expected->at(i).spatialObject();
     }
     delete expected;
     delete scan;
@@ -600,12 +607,14 @@ static void testRetrievalRandomized(const OrderedIndexFactory<SpatialObjectPoint
     SpatialIndex<SpatialObjectPointer>* spatial_index = 
         new SpatialIndex<SpatialObjectPointer>(space, index, &spatial_object_memory_manager);
     SessionMemory<SpatialObjectPointer> memory;
+    Point2** points = new Point2*[N_RECORDS];
     int64_t id = 0;
     for (double x = 0; x < X_MAX; x += 10) {
         for (double y = 0; y < Y_MAX; y += 10) {
             Point2* point = new Point2(x, y);
-            point->id(id++);
+            point->id(id);
             spatial_index->add(point, &memory);
+            points[id++] = point;
         }
     }
     // fflush(stdout);
@@ -630,6 +639,10 @@ static void testRetrievalRandomized(const OrderedIndexFactory<SpatialObjectPoint
     delete spatial_index;
     delete index;
     delete space;
+    for (int64_t id = 0; id < N_RECORDS; id++) {
+        delete points[id];
+    }
+    delete [] points;
 }
 
 static void testRetrieval(const OrderedIndexFactory<SpatialObjectPointer>* index_factory)

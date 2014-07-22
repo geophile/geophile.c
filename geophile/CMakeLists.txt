@@ -38,7 +38,6 @@ install(FILES
   RegionComparison.h
   SessionMemoryBase.h
   SessionMemory.h
-  SOR.h
   Space.h
   SpatialIndex.h
   SpatialIndexFilter.h
