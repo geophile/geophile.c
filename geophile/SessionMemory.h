@@ -15,7 +15,7 @@ namespace geophile
      * Maintains memory used in various SpatialIndex operations,
      * avoiding repeated allocation/deallocation..
      */
-    template <typename SOR>
+    template <class SOR>
         class SessionMemory : public SessionMemoryBase
     {
     public:

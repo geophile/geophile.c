@@ -13,8 +13,9 @@
 
 namespace geophile
 {
-    template <typename SOR> class OrderedIndex;
-    template <typename SOR> class SpatialIndexScan;
+    template <class SOR> class OrderedIndex;
+    template <class SOR> class SpatialIndexScan;
+    template <class SOR> class SpatialObjectMemoryManager;
     class Space;
     class SpatialIndexFilter;
     class SpatialObject;
@@ -23,7 +24,7 @@ namespace geophile
      * A SpatialIndex organizes a set of SpatialObjects for the
      * efficient execution of spatial searches.
      */
-    template <typename SOR>
+    template <class SOR>
     class SpatialIndex
     {
     public:
@@ -39,15 +40,15 @@ namespace geophile
          * Adds spatial_object to this SpatialIndex. memory contains
          * resources used internally.
          */
-        void add(const SOR& sor, SessionMemory<SOR>* memory)
+        void add(const SpatialObject* spatial_object, SessionMemory<SOR>* memory)
         {
-            const SpatialObject* spatial_object = SpatialObjectReference::spatialObject(sor);
             GEOPHILE_ASSERT(spatial_object->id() != SpatialObject::UNINITIALIZED_ID);
             ZArray* zs = memory->zArray();
             zs->clear();
             _space->decompose(spatial_object, spatial_object->maxZ(), memory);
             for (uint32_t i = 0; i < zs->length(); i++) {
-                _index->add(zs->at(i), sor);
+                _index->add(zs->at(i), 
+                            _spatial_object_memory_manager->newSpatialObjectReference(spatial_object));
             }
         }
 
@@ -94,9 +95,12 @@ namespace geophile
          *     space: The Space containing the SpatialObjects to be indexed.
          *     index: The OrderedIndex that will contain records of the spatial index.
          */
-        SpatialIndex(const Space* space, OrderedIndex<SOR>* index)
+        SpatialIndex(const Space* space, 
+                     OrderedIndex<SOR>* index,
+                     SpatialObjectMemoryManager<SOR>* spatial_object_memory_manager)
             : _space(space),
-            _index(index)
+              _index(index),
+              _spatial_object_memory_manager(spatial_object_memory_manager)
             {}
 
     public: // Not part of the API. Public for testing.
@@ -106,13 +110,15 @@ namespace geophile
         {
             return new SpatialIndexScan<SOR>(_index, 
                                              query_object, 
-                                             filter, 
+                                             filter,
+                                             _spatial_object_memory_manager,
                                              (OutputArray<SOR>*) memory->output());
         }
 
     private:
         const Space* _space;
         OrderedIndex<SOR>* _index;
+        SpatialObjectMemoryManager<SOR>* _spatial_object_memory_manager;
     };
 }
 

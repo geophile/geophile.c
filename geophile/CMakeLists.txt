@@ -28,6 +28,7 @@ install(FILES
   ByteBufferUnderflowException.h
   Cursor.h
   GeophileException.h
+  InMemorySpatialObjectMemoryManager.h
   OrderedIndex.h
   OutputArray.h
   OutputArrayBase.h
@@ -43,6 +44,8 @@ install(FILES
   SpatialIndexScan.h
   SpatialObject.h
   SpatialObjectKey.h
+  SpatialObjectMemoryManager.h
+  SpatialObjectPointer.h
   SpatialObjectTypes.h
   Z.h
   ZArray.h

@@ -9,17 +9,18 @@
 #include "SessionMemory.h"
 #include "SpatialIndexFilter.h"
 #include "SpatialObjectKey.h"
+#include "SpatialObjectMemoryManager.h"
 #include "OutputArray.h"
 
 namespace geophile
 {
-    template <typename SOR> class Cursor;
-    template <typename SOR> class OrderedIndex;
-    template <typename SOR> class OutputArray;
+    template <class SOR> class Cursor;
+    template <class SOR> class OrderedIndex;
+    template <class SOR> class OutputArray;
     class SpatialIndexFilter;
     class SpatialObject;
 
-    template <typename SOR> class SpatialIndexScan
+    template <class SOR> class SpatialIndexScan
     {
     public:
         void find(Z z)
@@ -33,7 +34,7 @@ namespace geophile
             while (!record.eof() && record.key().z().asInteger() < zhi) {
                 SOR spatial_object_reference = record.spatialObjectReference();
                 const SpatialObject* spatial_object = 
-                    SpatialObjectReference::spatialObject(spatial_object_reference);
+                    _spatial_object_memory_manager->spatialObject(spatial_object_reference);
                 if (_filter->overlap(_query_object, spatial_object)) {
                     _output->append(spatial_object_reference);
                 }
@@ -49,10 +50,12 @@ namespace geophile
         SpatialIndexScan(OrderedIndex<SOR>* index, 
                          const SpatialObject* query_object,
                          const SpatialIndexFilter* filter, 
+                         SpatialObjectMemoryManager<SOR>* spatial_object_memory_manager,
                          OutputArray<SOR>* output)
             : _index(index),
             _query_object(query_object),
             _filter(filter),
+            _spatial_object_memory_manager(spatial_object_memory_manager),
             _output(output),
             _cursor(NULL)
             {}
@@ -61,6 +64,7 @@ namespace geophile
         OrderedIndex<SOR>* _index;
         const SpatialObject* _query_object;
         const SpatialIndexFilter* _filter;
+        SpatialObjectMemoryManager<SOR>* _spatial_object_memory_manager;
         OutputArray<SOR>* _output;
         Cursor<SOR>* _cursor;
     };

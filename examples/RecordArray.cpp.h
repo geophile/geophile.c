@@ -5,7 +5,7 @@
 
 using namespace geophile;
 
-template <typename SOR>
+template <class SOR>
 void RecordArray<SOR>::add(Z z, const SOR& sor)
 {
     if (_n == _capacity) {
@@ -15,11 +15,10 @@ void RecordArray<SOR>::add(Z z, const SOR& sor)
     _records[_n++].set(z, sor);
 }
 
-template <typename SOR>
+template <class SOR>
 SOR RecordArray<SOR>::remove(Z z, int64_t soid)
 {
     SOR removed;
-    SpatialObjectReference::setNull(removed);
     SpatialObjectKey key(z, soid);
     int32_t remove_position = position(key, 
                                        /* forward_move */ true, 
@@ -54,31 +53,33 @@ SOR RecordArray<SOR>::remove(Z z, int64_t soid)
     return removed;
 }
 
-template <typename SOR>
+template <class SOR>
 void RecordArray<SOR>::freeze()
 {
     qsort(_records, _n, sizeof(Record<SOR>), recordCompare);
 }
 
-template <typename SOR>
+template <class SOR>
 Cursor<SOR>* RecordArray<SOR>::cursor()
 {
     return new RecordArrayCursor<SOR>(*this);
 }
 
-template <typename SOR>
+template <class SOR>
 RecordArray<SOR>::~RecordArray()
 {
     for (int i = 0; i < _n; i++) {
-        SpatialObjectReference::deleteSpatialObject(_records[i].spatialObjectReference());
+        delete this->_spatial_object_memory_manager->spatialObject(_records[i].spatialObjectReference());
     }
     delete [] _records;
     delete [] _buffer;
 }
 
-template <typename SOR>
-RecordArray<SOR>::RecordArray(const SpatialObjectTypes* spatial_object_types, SessionMemory<SOR>* memory)
-    : OrderedIndex<SOR>(spatial_object_types, memory),
+template <class SOR>
+RecordArray<SOR>::RecordArray(const SpatialObjectTypes* spatial_object_types,
+                              const SpatialObjectMemoryManager<SOR>* spatial_object_memory_manager,
+                              SessionMemory<SOR>* memory)
+: OrderedIndex<SOR>(spatial_object_types, memory, spatial_object_memory_manager),
       _n(0),
       _capacity(INITIAL_CAPACITY),
       _records(new Record<SOR>[INITIAL_CAPACITY]),
@@ -86,7 +87,7 @@ RecordArray<SOR>::RecordArray(const SpatialObjectTypes* spatial_object_types, Se
       _buffer(new byte[INITIAL_BUFFER_SIZE])
 {}
 
-template <typename SOR>
+template <class SOR>
 int32_t RecordArray<SOR>::position(const SpatialObjectKey& key,
                                    int32_t forward_move, 
                                    int32_t include_key) const
@@ -132,13 +133,13 @@ int32_t RecordArray<SOR>::position(const SpatialObjectKey& key,
     return position;
 }
 
-template <typename SOR>
+template <class SOR>
 uint32_t RecordArray<SOR>::nRecords() const
 {
     return _n;
 }
 
-template <typename SOR>
+template <class SOR>
 Record<SOR> RecordArray<SOR>::at(int32_t position) const
 {
     GEOPHILE_ASSERT(position >= 0);
@@ -146,7 +147,7 @@ Record<SOR> RecordArray<SOR>::at(int32_t position) const
     return _records[position];
 }
 
-template <typename SOR>
+template <class SOR>
 void RecordArray<SOR>::growBuffer()
 {
     uint32_t new_buffer_size = _buffer_size * 2;
@@ -157,7 +158,7 @@ void RecordArray<SOR>::growBuffer()
     _buffer_size = new_buffer_size;
 }
 
-template <typename SOR>
+template <class SOR>
 void RecordArray<SOR>::growArray()
 {
     int32_t new_capacity = _capacity * 2;
@@ -168,7 +169,7 @@ void RecordArray<SOR>::growArray()
     _capacity = new_capacity;
 }
 
-template <typename SOR>
+template <class SOR>
 void RecordArray<SOR>::serialize(const SpatialObject* spatial_object)
 {
     int32_t serialized = false;
@@ -185,7 +186,7 @@ void RecordArray<SOR>::serialize(const SpatialObject* spatial_object)
     } while (!serialized);
 }
 
-template <typename SOR>
+template <class SOR>
 SpatialObject* RecordArray<SOR>::deserialize()
 {
     ByteBuffer byte_buffer(_buffer, _buffer_size);
@@ -195,7 +196,7 @@ SpatialObject* RecordArray<SOR>::deserialize()
     return spatial_object;
 }
 
-template <typename SOR>
+template <class SOR>
 int32_t RecordArray<SOR>::recordCompare(const void* x, const void* y)
 {
     const Record<SOR>* r = (const Record<SOR>*) x;
@@ -203,26 +204,26 @@ int32_t RecordArray<SOR>::recordCompare(const void* x, const void* y)
     return r->key().compare(s->key());
 }
 
-template <typename SOR>
+template <class SOR>
 Record<SOR> RecordArrayCursor<SOR>::next()
 {
     return neighbor(true);
 }
 
-template <typename SOR>
+template <class SOR>
 Record<SOR> RecordArrayCursor<SOR>::previous()
 {
     return neighbor(false);
 }
 
-template <typename SOR>
+template <class SOR>
 void RecordArrayCursor<SOR>::goTo(const SpatialObjectKey& key)
 {
     _start_at = key;
     this->state(NEVER_USED);
 }
 
-template <typename SOR>
+template <class SOR>
 RecordArrayCursor<SOR>::RecordArrayCursor(RecordArray<SOR>& record_array)
     : _record_array(record_array),
       _position(0),
@@ -230,7 +231,7 @@ RecordArrayCursor<SOR>::RecordArrayCursor(RecordArray<SOR>& record_array)
       _forward(true)
 {}
 
-template <typename SOR>
+template <class SOR>
 Record<SOR> RecordArrayCursor<SOR>::neighbor(int32_t forward_move)
 {
     switch (this->state()) {
@@ -259,7 +260,7 @@ Record<SOR> RecordArrayCursor<SOR>::neighbor(int32_t forward_move)
     return this->current();
 }
 
-template <typename SOR>
+template <class SOR>
 void RecordArrayCursor<SOR>::startIteration(int32_t forward_move, int32_t include_start_key)
 {
     _position = _record_array.position(_start_at, forward_move, include_start_key);

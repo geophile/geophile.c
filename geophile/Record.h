@@ -9,7 +9,7 @@ namespace geophile
 {
     class SpatialObject;
 
-    template <typename SOR> // SOR: Spatial Object Reference
+    template <class SOR> // SOR: Spatial Object Reference
     class Record
     {
     public:
@@ -35,28 +35,28 @@ namespace geophile
 
         int32_t eof() const
         {
-            return SpatialObjectReference::isNull(_spatial_object_reference);
+            return _spatial_object_reference.isNull();
         }
 
         void setEOF()
         {
             _key = Z();
-            SpatialObjectReference::setNull(_spatial_object_reference);
+            _spatial_object_reference.setNull();
         }
 
         void set(Z z, SOR spatial_object_reference)
         {
-            GEOPHILE_ASSERT(!SpatialObjectReference::isNull(spatial_object_reference));
+            GEOPHILE_ASSERT(!spatial_object_reference.isNull());
             _key = 
                 SpatialObjectKey(z, 
-                                 SpatialObjectReference::spatialObjectId(spatial_object_reference));
+                                 spatial_object_reference.spatialObjectId());
             _spatial_object_reference = spatial_object_reference;
         }
 
         Record()
             : _key()
         {
-            SpatialObjectReference::setNull(_spatial_object_reference);
+            _spatial_object_reference.setNull();
         }
 
         Record(const Record& record)

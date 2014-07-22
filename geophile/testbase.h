@@ -3,7 +3,8 @@
 
 #include "geophile.h"
 #include "OrderedIndexFactory.h"
+#include "SpatialObjectPointer.h"
 
-int runTests(geophile::OrderedIndexFactory<const geophile::SpatialObject*>* index_factory);
+int runTests(geophile::OrderedIndexFactory<geophile::SpatialObjectPointer>* index_factory);
 
 #endif

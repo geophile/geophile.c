@@ -20,7 +20,7 @@ namespace geophile
         DONE
     } CursorState;
 
-    template <typename SOR> // SOR: Spatial Object Reference
+    template <class SOR> // SOR: Spatial Object Reference
     class Cursor
     {
     public:

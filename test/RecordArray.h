@@ -11,7 +11,7 @@ namespace geophile
     class SpatialObjectKey;
     class SpatialObjectTypes;
 
-    template <typename SOR> // SOR: Spatial Object Reference
+    template <class SOR> // SOR: Spatial Object Reference
     class RecordArray : public OrderedIndex<SOR>
     {
     public:
@@ -30,7 +30,9 @@ namespace geophile
                          int32_t include_key) const;
         uint32_t nRecords() const;
         Record<SOR> at(int32_t position) const;
-        RecordArray(const SpatialObjectTypes* spatial_object_types, SessionMemory<SOR>* memory);
+        RecordArray(const SpatialObjectTypes* spatial_object_types,
+                    const SpatialObjectMemoryManager<SOR>* spatial_object_memory_manager,
+                    SessionMemory<SOR>* memory);
        
     private:
         // serialize and deserialize use _buffer (which is why this class
@@ -55,7 +57,7 @@ namespace geophile
         byte* _buffer;
     };
 
-    template <typename SOR>
+    template <class SOR>
     class RecordArrayCursor : public Cursor<SOR>
     {
     public:

@@ -16,7 +16,7 @@ namespace geophile
      * A OutputArray is used to accumulate the SpatialObjects
      * resulting from one or more retrievals from a SpatialIndex.
      */
-    template <typename SOR> class OutputArray : public OutputArrayBase
+    template <class SOR> class OutputArray : public OutputArrayBase
     {
     public:
         /*

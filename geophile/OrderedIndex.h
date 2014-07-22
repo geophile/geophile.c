@@ -8,8 +8,9 @@
 
 namespace geophile
 {
-    template <typename SOR> class Cursor;
-    template <typename SOR> class SessionMemory;
+    template <class SOR> class Cursor;
+    template <class SOR> class SessionMemory;
+    template <class SOR> class SpatialObjectMemoryManager;
     class SpatialObject;
 
     /*
@@ -26,7 +27,7 @@ namespace geophile
      * be called. Then, access to OrderedIndex contents is
      * accomplished using a Cursor, obtained by cursor().
      */
-    template <typename SOR> // SOR: Spatial Object Reference
+    template <class SOR> // SOR: Spatial Object Reference
         class OrderedIndex
     {
     public:
@@ -60,9 +61,12 @@ namespace geophile
         /*
          * Constructor. 
          */
-        OrderedIndex(const SpatialObjectTypes* spatial_object_types, SessionMemory<SOR>* memory)
-            : _memory(memory),
-              _spatial_object_types(spatial_object_types)
+        OrderedIndex(const SpatialObjectTypes* spatial_object_types, 
+                     SessionMemory<SOR>* memory,
+                     const SpatialObjectMemoryManager<SOR>* spatial_object_memory_manager)
+            : _spatial_object_types(spatial_object_types),
+              _memory(memory),
+              _spatial_object_memory_manager(spatial_object_memory_manager)
         {}
 
     protected:
@@ -91,9 +95,12 @@ namespace geophile
             return _spatial_object_types->newSpatialObject(type_id);
         }
 
+    protected:
+        SessionMemory<SOR>* _memory;
+        const SpatialObjectMemoryManager<SOR>* _spatial_object_memory_manager;
+
     private:
         const SpatialObjectTypes* _spatial_object_types;
-        SessionMemory<SOR>* _memory;
     };
 }
 
