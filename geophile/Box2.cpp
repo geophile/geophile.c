@@ -3,6 +3,7 @@
 #include "Region.h"
 #include "Box2.h"
 #include "ByteBuffer.h"
+#include "util.h"
 
 using namespace geophile;
 
@@ -76,6 +77,7 @@ int32_t Box2::typeId() const
 
 void Box2::readFrom(ByteBuffer& byte_buffer)
 {
+    _id = byte_buffer.getInt64();
     _xlo = byte_buffer.getDouble();
     _xhi = byte_buffer.getDouble();
     _ylo = byte_buffer.getDouble();
@@ -84,6 +86,7 @@ void Box2::readFrom(ByteBuffer& byte_buffer)
 
 void Box2::writeTo(ByteBuffer& byte_buffer) const
 {
+    byte_buffer.putInt64(_id);
     byte_buffer.putDouble(_xlo);
     byte_buffer.putDouble(_xhi);
     byte_buffer.putDouble(_ylo);
@@ -92,6 +95,7 @@ void Box2::writeTo(ByteBuffer& byte_buffer) const
 
 void Box2::copyFrom(const SpatialObject* spatial_object)
 {
+    GEOPHILE_ASSERT(typeId() == spatial_object->typeId());
     const Box2* box = (const Box2*) spatial_object;
     _id = box->_id;
     _xlo = box->_xlo;

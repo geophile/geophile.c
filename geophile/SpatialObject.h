@@ -11,7 +11,7 @@ namespace geophile
 
     class SpatialObject
     {
-    public:
+    public: // SpatialObject interface
         virtual void id(int64_t id) = 0;
         virtual int64_t id() const = 0;
         virtual void arbitraryPoint(double* coords) const = 0;

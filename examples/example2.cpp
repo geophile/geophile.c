@@ -132,7 +132,9 @@ int main(int32_t argc, const char** argv)
     Space* space = createSpace();
     OrderedIndex<Point2>* index = createIndex();
     SpatialIndex<Point2>* spatial_index = 
-        new SpatialIndex<Point2>(space, index, &spatial_object_memory_manager);
+        new SpatialIndex<Point2>(space, 
+                                 index, 
+                                 &spatial_object_memory_manager);
     SessionMemory<Point2> memory;
     loadRandomPoints(spatial_index, &memory);
     runQueries(spatial_index, &memory);

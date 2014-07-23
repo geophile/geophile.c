@@ -23,6 +23,7 @@ add_library(geophiletest SHARED
 install(FILES 
   geophile.h
   Box2.h
+  BufferingSpatialObjectMemoryManager.h
   ByteBuffer.h
   ByteBufferOverflowException.h
   ByteBufferUnderflowException.h

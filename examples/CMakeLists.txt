@@ -19,3 +19,10 @@ add_executable(example2
 
 target_link_libraries(example2 geophile)
 
+# example3
+
+add_executable(example3
+  example3.cpp)
+
+target_link_libraries(example3 geophile)
+

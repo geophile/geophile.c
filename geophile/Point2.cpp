@@ -3,6 +3,7 @@
 #include "Region.h"
 #include "Point2.h"
 #include "ByteBuffer.h"
+#include "util.h"
 
 using namespace geophile;
 
@@ -69,19 +70,21 @@ int32_t Point2::typeId() const
 
 void Point2::readFrom(ByteBuffer& byte_buffer)
 {
+    _id = byte_buffer.getInt64();
     _x = byte_buffer.getDouble();
     _y = byte_buffer.getDouble();
 }
 
 void Point2::writeTo(ByteBuffer& byte_buffer) const
 {
+    byte_buffer.putInt64(_id);
     byte_buffer.putDouble(_x);
     byte_buffer.putDouble(_y);
 }
 
 void Point2::copyFrom(const SpatialObject* spatial_object)
 {
-    // TODO: It would be nice to check the spatial_object's typeid
+    GEOPHILE_ASSERT(typeId() == spatial_object->typeId());
     const Point2* point = (const Point2*) spatial_object;
     _id = point->_id;
     _x = point->_x;

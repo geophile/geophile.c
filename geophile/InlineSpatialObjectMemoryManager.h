@@ -15,7 +15,7 @@ namespace geophile
             return SOR(spatial_object);
         }
 
-        virtual void cleanup(SOR sor) const
+        virtual void cleanupSpatialObjectReference(const SOR& sor) const
         {}
     };
 }

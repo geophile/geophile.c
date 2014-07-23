@@ -21,7 +21,7 @@ namespace geophile
             return SpatialObjectPointer(spatial_object);
         }
 
-        virtual void cleanup(SpatialObjectPointer p) const
+        virtual void cleanupSpatialObjectReference(const SpatialObjectPointer& p) const
         {}
     };
 }

@@ -32,13 +32,13 @@ overlaps the spatial object.
 
 Change `/usr/local` to whatever makes sense for your installation. If
 you use `/usr/local`, then Geophile header files will go to
-`/usr/local/include`, and `libgeophile.so` will go to
+`/usr/local/geophile/include`, and `libgeophile.so` will go to
 `/usr/local/lib`. Depending on where you are installing files, you may
 or may not need to run `make install` as root.
 
 ## Concepts
 
-In addition to OrderedIndex and Spatial Object, described above,
+In addition to Ordered   Index and Spatial Object, described above,
 `Geophile.C` relies on the following concepts.
 
 ### Space 
@@ -77,8 +77,8 @@ by the `SpatialIndex` implementation.
 
 ## Examples
 
-The source code for the examples can be found in `examples/example1.cpp`
-and `examples/example2.cpp`. This code relies on the following `Index` and
+The source code for the examples can be found in the `examples`
+directory This code relies on the following `Index` and
 `SpatialObject` classes:
 
 * `geophile::RecordArray`: An `OrderedIndex` subclass that stores
@@ -120,7 +120,9 @@ use, and so is not included in `libgeophile.so`.
 
 A `SpatialIndex` is created:
 
-        SpatialIndex* spatial_index = new SpatialIndex(space, index);
+        SpatialIndex* spatial_index = new SpatialIndex(space, 
+                                                       index, 
+                                                       &spatial_object_memory_manager);
 
 The spatial index is loaded with 1,000,000 points:
 
@@ -141,7 +143,7 @@ The spatial index is loaded with 1,000,000 points:
             spatial_index->freeze();
             stopwatch.stop();
             double sec = stopwatch.usec() / 1000000.0;
-            printf("Loaded %d points in %f sec (%f points/sec)\n",
+            printf("Loaded %d points in %f sec (%f points/sec)\\n",
                    N_POINTS, sec, N_POINTS / sec);
         }
 
@@ -205,17 +207,34 @@ Sample output:
         Average query time: 0.077600 msec
 
 `example2.cpp` is just like `example1.cpp` except for the way in which
-points are allocated. In example1, the spatial object are of type
-`Point2`, and each `Point2` is dynamically allocated. Once a `Point2`
-is allocated and added to the spatial index, it is owned by the index,
-and deleted with the index. The spatial index is declared as
-`SpatialIndex<const SpatialObject*>`, (`Point2` is a subclass of
-`SpatialObject`). The spatial index is stored in a `RecordArray<const SpatialObject*>`, 
-which encapsulates an array of const
-`SpatialObject*`. I.e., the array elements point to dynamically
-allocated `Point2` objects.
+points are allocated. In example1, the spatial objects are of type
+`Point2`, and each `Point2` is dynamically allocated. These `Point2` objects are
+pointed to by the index but owned by the application.
+The spatial index is declared as
+`SpatialIndex<SpatialObjectPointer>`,
+where `SpatialObjectPointer` is a wrapper for `SpatialObject*`.
+The spatial index is stored in a `RecordArray<SpatialObjectPointer>`, 
+which encapsulates an array of 
+`SpatialObjectPointer`.
 
 In example2, the spatial index is declared as
-`SpatialIndex<InlinePoint2>`, and `InlinePoint2` has a data member of
-type `Point2`. `RecordArray<InlinePoint2>` encapsulates an array of
-`InlinePoint2`, so there are no dynamically allocated `Point2` objects.
+`SpatialIndex<Point2>`. `RecordArray<Point2>` encapsulates an array of
+`Point2`, so there are no dynamically allocated `Point2` objects.
+
+`example3.cpp` is like `example1.cpp` except that the index stores
+copies of the `Point2` objects added to it. This difference is
+implemented by using a `BufferingSpatialObjectMemoryManager` instead
+of an `InMemorySpatialObjectMemoryManger`.  An
+`InMemorySpatialObjectMemoryManger` places a pointer to the
+`SpatialObject` provided by the application into the index. This is
+acceptable as long as the spatial index does not delete the spatial
+objects given to it, and the application does not delete or modify
+these objects. If either of these conditions does not hold, then
+`BufferingSpatialObjectMemoryManager` should be used. This is designed
+for use with disk-based indexes (e.g. b-trees). In this case, only a
+fraction of the indexed spatial object are memory resident, and the
+index implementation must be free to delete them to make room for
+others. Example2 uses another kind of memory manager,
+`InlineSpatialObjectMemoryManager`. This is appropriate when the index
+record stores the entire spatial object instead of pointing to
+it. 
