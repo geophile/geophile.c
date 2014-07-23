@@ -1,6 +1,6 @@
 # Geophile.C
 
-**Version:** 0.2
+**Version:** 0.3
 
 `Geophile.C` is a C++ implementation of a *spatial index*. A spatial
 index organizes a set of spatial objects so that those overlapping a
