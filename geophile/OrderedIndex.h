@@ -10,7 +10,7 @@ namespace geophile
 {
     template <class SOR> class Cursor;
     template <class SOR> class SessionMemory;
-    template <class SOR> class SpatialObjectMemoryManager;
+    template <class SOR> class SpatialObjectReferenceManager;
     class SpatialObject;
 
     /*
@@ -63,10 +63,10 @@ namespace geophile
          */
         OrderedIndex(const SpatialObjectTypes* spatial_object_types, 
                      SessionMemory<SOR>* memory,
-                     const SpatialObjectMemoryManager<SOR>* spatial_object_memory_manager)
+                     const SpatialObjectReferenceManager<SOR>* spatial_object_reference_manager)
             : _spatial_object_types(spatial_object_types),
               _memory(memory),
-              _spatial_object_memory_manager(spatial_object_memory_manager)
+              _spatial_object_reference_manager(spatial_object_reference_manager)
         {}
 
     protected:
@@ -97,7 +97,7 @@ namespace geophile
 
     protected:
         SessionMemory<SOR>* _memory;
-        const SpatialObjectMemoryManager<SOR>* _spatial_object_memory_manager;
+        const SpatialObjectReferenceManager<SOR>* _spatial_object_reference_manager;
 
     private:
         const SpatialObjectTypes* _spatial_object_types;

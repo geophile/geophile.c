@@ -23,14 +23,14 @@ add_library(geophiletest SHARED
 install(FILES 
   geophile.h
   Box2.h
-  BufferingSpatialObjectMemoryManager.h
+  BufferingSpatialObjectReferenceManager.h
   ByteBuffer.h
   ByteBufferOverflowException.h
   ByteBufferUnderflowException.h
   Cursor.h
   GeophileException.h
-  InlineSpatialObjectMemoryManager.h
-  InMemorySpatialObjectMemoryManager.h
+  InlineSpatialObjectReferenceManager.h
+  InMemorySpatialObjectReferenceManager.h
   OrderedIndex.h
   OutputArray.h
   OutputArrayBase.h
@@ -45,7 +45,7 @@ install(FILES
   SpatialIndexScan.h
   SpatialObject.h
   SpatialObjectKey.h
-  SpatialObjectMemoryManager.h
+  SpatialObjectReferenceManager.h
   SpatialObjectPointer.h
   SpatialObjectTypes.h
   Z.h

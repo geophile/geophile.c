@@ -69,7 +69,7 @@ template <class SOR>
 RecordArray<SOR>::~RecordArray()
 {
     for (int i = 0; i < _n; i++) {
-        this->_spatial_object_memory_manager
+        this->_spatial_object_reference_manager
             ->cleanupSpatialObjectReference(_records[i].spatialObjectReference());
     }
     delete [] _records;
@@ -78,9 +78,9 @@ RecordArray<SOR>::~RecordArray()
 
 template <class SOR>
 RecordArray<SOR>::RecordArray(const SpatialObjectTypes* spatial_object_types,
-                              const SpatialObjectMemoryManager<SOR>* spatial_object_memory_manager,
+                              const SpatialObjectReferenceManager<SOR>* spatial_object_reference_manager,
                               SessionMemory<SOR>* memory)
-: OrderedIndex<SOR>(spatial_object_types, memory, spatial_object_memory_manager),
+: OrderedIndex<SOR>(spatial_object_types, memory, spatial_object_reference_manager),
       _n(0),
       _capacity(INITIAL_CAPACITY),
       _records(new Record<SOR>[INITIAL_CAPACITY]),

@@ -2,7 +2,7 @@
 #include <math.h>
 
 #include <geophile/geophile.h>
-#include <geophile/InMemorySpatialObjectMemoryManager.h>
+#include <geophile/InMemorySpatialObjectReferenceManager.h>
 
 #include "RecordArray.h"
 #include "Stopwatch.h"
@@ -17,7 +17,7 @@ static const uint32_t DESIRED_RESULT_SIZE = 5;
 static const uint32_t MAX_REGIONS = 8;
 static SpatialObjectTypes spatial_object_types;
 static SessionMemory<SpatialObjectPointer> memory;
-static InMemorySpatialObjectMemoryManager spatial_object_memory_manager;
+static InMemorySpatialObjectReferenceManager spatial_object_reference_manager;
 static Stopwatch stopwatch;
 static Point2* points[N_POINTS];
 
@@ -63,7 +63,7 @@ static Space* createSpace()
 static OrderedIndex<SpatialObjectPointer>* createIndex()
 {
     return new RecordArray<SpatialObjectPointer>(&spatial_object_types, 
-                                                 &spatial_object_memory_manager,
+                                                 &spatial_object_reference_manager,
                                                  &memory);
 }
 
@@ -144,7 +144,7 @@ int main(int32_t argc, const char** argv)
     SpatialIndex<SpatialObjectPointer>* spatial_index = 
         new SpatialIndex<SpatialObjectPointer>(space, 
                                                index, 
-                                               &spatial_object_memory_manager);
+                                               &spatial_object_reference_manager);
     SessionMemory<SpatialObjectPointer> memory;
     loadRandomPoints(spatial_index, &memory);
     runQueries(spatial_index, &memory);

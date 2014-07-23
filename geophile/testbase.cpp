@@ -8,7 +8,7 @@
 #include "SpatialObjectKey.h"
 #include "OrderedIndex.h"
 #include "SessionMemory.h"
-#include "InMemorySpatialObjectMemoryManager.h"
+#include "InMemorySpatialObjectReferenceManager.h"
 #include "SpatialIndex.h"
 #include "SpatialIndexFilter.h"
 #include "SpatialIndexScan.h"
@@ -24,7 +24,7 @@
 using namespace geophile;
 
 static SpatialObjectTypes SPATIAL_OBJECT_TYPES;
-static InMemorySpatialObjectMemoryManager spatial_object_memory_manager;
+static InMemorySpatialObjectReferenceManager spatial_object_reference_manager;
 
 //----------------------------------------------------------------------
 
@@ -605,7 +605,7 @@ static void testRetrievalRandomized(const OrderedIndexFactory<SpatialObjectPoint
     Space* space = new Space(2, lo, hi, x_bits);
     OrderedIndex<SpatialObjectPointer>* index = index_factory->newIndex(&SPATIAL_OBJECT_TYPES);
     SpatialIndex<SpatialObjectPointer>* spatial_index = 
-        new SpatialIndex<SpatialObjectPointer>(space, index, &spatial_object_memory_manager);
+        new SpatialIndex<SpatialObjectPointer>(space, index, &spatial_object_reference_manager);
     SessionMemory<SpatialObjectPointer> memory;
     Point2** points = new Point2*[N_RECORDS];
     int64_t id = 0;

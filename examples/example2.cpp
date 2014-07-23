@@ -6,7 +6,7 @@
 #include "Stopwatch.h"
 
 #include <geophile/geophile.h>
-#include <geophile/InlineSpatialObjectMemoryManager.h>
+#include <geophile/InlineSpatialObjectReferenceManager.h>
 
 using namespace geophile;
 
@@ -18,7 +18,7 @@ static uint32_t DESIRED_RESULT_SIZE = 5;
 static uint32_t MAX_REGIONS = 8;
 static SpatialObjectTypes spatial_object_types;
 static SessionMemory<Point2> memory;
-static InlineSpatialObjectMemoryManager<Point2> spatial_object_memory_manager;
+static InlineSpatialObjectReferenceManager<Point2> spatial_object_reference_manager;
 static Stopwatch stopwatch;
 
 class PointFilter : public SpatialIndexFilter
@@ -63,7 +63,7 @@ static Space* createSpace()
 static OrderedIndex<Point2>* createIndex()
 {
     return new RecordArray<Point2>(&spatial_object_types, 
-                                   &spatial_object_memory_manager,
+                                   &spatial_object_reference_manager,
                                    &memory);
 }
 
@@ -134,7 +134,7 @@ int main(int32_t argc, const char** argv)
     SpatialIndex<Point2>* spatial_index = 
         new SpatialIndex<Point2>(space, 
                                  index, 
-                                 &spatial_object_memory_manager);
+                                 &spatial_object_reference_manager);
     SessionMemory<Point2> memory;
     loadRandomPoints(spatial_index, &memory);
     runQueries(spatial_index, &memory);

@@ -3,7 +3,7 @@
 
 #include "geophile/testbase.h"
 #include "geophile/SpatialObjectPointer.h"
-#include "geophile/InMemorySpatialObjectMemoryManager.h"
+#include "geophile/InMemorySpatialObjectReferenceManager.h"
 #include "RecordArray.h"
 
 using namespace geophile;
@@ -17,12 +17,12 @@ public:
     (const SpatialObjectTypes* spatial_object_types) const
     {
         return new RecordArray<SpatialObjectPointer>(spatial_object_types, 
-                                                     &_spatial_object_memory_manager,
+                                                     &_spatial_object_reference_manager,
                                                      &memory);
     }
 
 private:
-    InMemorySpatialObjectMemoryManager _spatial_object_memory_manager;
+    InMemorySpatialObjectReferenceManager _spatial_object_reference_manager;
 };
 
 RecordArrayFactory RECORD_ARRAY_FACTORY;

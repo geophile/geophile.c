@@ -32,7 +32,7 @@ namespace geophile
         uint32_t nRecords() const;
         Record<SOR> at(int32_t position) const;
         RecordArray(const SpatialObjectTypes* spatial_object_types,
-                    const SpatialObjectMemoryManager<SOR>* spatial_object_memory_manager,
+                    const SpatialObjectReferenceManager<SOR>* spatial_object_reference_manager,
                     SessionMemory<SOR>* memory);
        
     private:

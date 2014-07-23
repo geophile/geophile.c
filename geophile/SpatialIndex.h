@@ -15,7 +15,7 @@ namespace geophile
 {
     template <class SOR> class OrderedIndex;
     template <class SOR> class SpatialIndexScan;
-    template <class SOR> class SpatialObjectMemoryManager;
+    template <class SOR> class SpatialObjectReferenceManager;
     class Space;
     class SpatialIndexFilter;
     class SpatialObject;
@@ -48,7 +48,7 @@ namespace geophile
             _space->decompose(spatial_object, spatial_object->maxZ(), memory);
             for (uint32_t i = 0; i < zs->length(); i++) {
                 _index->add(zs->at(i), 
-                            _spatial_object_memory_manager->newSpatialObjectReference(spatial_object));
+                            _spatial_object_reference_manager->newSpatialObjectReference(spatial_object));
             }
         }
 
@@ -97,10 +97,10 @@ namespace geophile
          */
         SpatialIndex(const Space* space, 
                      OrderedIndex<SOR>* index,
-                     SpatialObjectMemoryManager<SOR>* spatial_object_memory_manager)
+                     SpatialObjectReferenceManager<SOR>* spatial_object_reference_manager)
             : _space(space),
               _index(index),
-              _spatial_object_memory_manager(spatial_object_memory_manager)
+              _spatial_object_reference_manager(spatial_object_reference_manager)
             {}
 
     public: // Not part of the API. Public for testing.
@@ -111,14 +111,14 @@ namespace geophile
             return new SpatialIndexScan<SOR>(_index, 
                                              query_object, 
                                              filter,
-                                             _spatial_object_memory_manager,
+                                             _spatial_object_reference_manager,
                                              (OutputArray<SOR>*) memory->output());
         }
 
     private:
         const Space* _space;
         OrderedIndex<SOR>* _index;
-        SpatialObjectMemoryManager<SOR>* _spatial_object_memory_manager;
+        SpatialObjectReferenceManager<SOR>* _spatial_object_reference_manager;
     };
 }
 

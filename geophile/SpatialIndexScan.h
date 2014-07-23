@@ -16,6 +16,7 @@ namespace geophile
     template <class SOR> class Cursor;
     template <class SOR> class OrderedIndex;
     template <class SOR> class OutputArray;
+    template <class SOR> class SpatialObjectReferenceManager;
     class SpatialIndexFilter;
     class SpatialObject;
 
@@ -48,7 +49,7 @@ namespace geophile
         SpatialIndexScan(OrderedIndex<SOR>* index, 
                          const SpatialObject* query_object,
                          const SpatialIndexFilter* filter, 
-                         SpatialObjectMemoryManager<SOR>* spatial_object_memory_manager,
+                         SpatialObjectReferenceManager<SOR>* spatial_object_reference_manager,
                          OutputArray<SOR>* output)
             : _index(index),
             _query_object(query_object),
