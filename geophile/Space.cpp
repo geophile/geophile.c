@@ -195,7 +195,10 @@ const uint32_t* Space::interleave() const
 
 int64_t Space::appToZ(uint32_t d, double x) const
 {
-    return (int64_t) (((x - _app_lo[d]) / _app_width[d]) * _z_range[d]);
+    return 
+        x == _app_hi[d]
+        ? (int64_t) _z_range[d] - 1
+        : (int64_t) (((x - _app_lo[d]) / _app_width[d]) * _z_range[d]);
 }
 
 double Space::zToApp(uint32_t d, uint64_t z) const
@@ -217,6 +220,7 @@ Space::Space(uint32_t dimensions,
     _x_bits = new uint32_t[dimensions];
     _x_bytes = new uint32_t[dimensions];
     _app_lo = new double[dimensions];
+    _app_hi = new double[dimensions];
     _app_width = new double[dimensions];
     _z_range = new uint64_t[dimensions];
     _z_bits = 0;
@@ -227,6 +231,7 @@ Space::Space(uint32_t dimensions,
         _x_bits[d] = x_bits[d];
         _x_bytes[d] = (x_bits[d] + 7) / 8;
         _app_lo[d] = lo[d];
+        _app_hi[d] = hi[d];
         _app_width[d] = hi[d] - lo[d];
         _z_range[d] = 1 << x_bits[d];
         _z_bits += x_bits[d];
@@ -263,6 +268,7 @@ Space::~Space()
     delete [] _x_bits;
     delete [] _x_bytes;
     delete [] _app_lo;
+    delete [] _app_hi;
     delete [] _app_width;
     delete [] _z_range;
     for (uint32_t x_byte_position = 0; x_byte_position < 8; x_byte_position++) {

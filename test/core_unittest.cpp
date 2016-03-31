@@ -27,6 +27,12 @@ using namespace geophile;
 
 //----------------------------------------------------------------------
 
+// Constants
+
+static double EPSILON = 0.001;
+
+//----------------------------------------------------------------------
+
 // Utility functions
 
 static int64_t unsigned_right_shift(int64_t z)
@@ -306,7 +312,7 @@ static void decomposeEntireSpace()
     double hi[] = {1024.0, 1024.0};
     uint32_t x_bits[] = {10, 10};
     Space space(2, lo, hi, x_bits);
-    Box2 box(0, 1023, 0, 1023);
+    Box2 box(0, 1024, 0, 1024);
     OutputArray<const SpatialObject*> output;
     SessionMemory<const SpatialObject*> memory;
     ZArray* zs = memory.zArray();
@@ -321,7 +327,7 @@ static void decomposeLeftHalfSpace()
     double hi[] = {1024.0, 1024.0};
     uint32_t x_bits[] = {10, 10};
     Space space(2, lo, hi, x_bits);
-    Box2 box(0, 511, 0, 1023);
+    Box2 box(0, 512 - EPSILON, 0, 1024);
     OutputArray<const SpatialObject*> output;
     SessionMemory<const SpatialObject*> memory;
     ZArray* zs = memory.zArray();
@@ -336,7 +342,7 @@ static void decomposeRightHalfSpace()
     double hi[] = {1024.0, 1024.0};
     uint32_t x_bits[] = {10, 10};
     Space space(2, lo, hi, x_bits);
-    Box2 box(512, 1023, 0, 1023);
+    Box2 box(512, 1024, 0, 1024);
     OutputArray<const SpatialObject*> output;
     SessionMemory<const SpatialObject*> memory;
     ZArray* zs = memory.zArray();
@@ -351,7 +357,7 @@ static void decomposeBottomHalfSpace()
     double hi[] = {1024.0, 1024.0};
     uint32_t x_bits[] = {10, 10};
     Space space(2, lo, hi, x_bits);
-    Box2 box(0, 1023, 0, 511);
+    Box2 box(0, 1024, 0, 512 - EPSILON);
     OutputArray<const SpatialObject*> output;
     SessionMemory<const SpatialObject*> memory;
     ZArray* zs = memory.zArray();
@@ -367,7 +373,7 @@ static void decomposeTopHalfSpace()
     double hi[] = {1024.0, 1024.0};
     uint32_t x_bits[] = {10, 10};
     Space space(2, lo, hi, x_bits);
-    Box2 box(0, 1023, 512, 1023);
+    Box2 box(0, 1024, 512, 1024);
     OutputArray<const SpatialObject*> output;
     SessionMemory<const SpatialObject*> memory;
     ZArray* zs = memory.zArray();
@@ -395,6 +401,21 @@ static void decomposeTinyBoxInMiddleOfSpace()
     ASSERT_EQ(zvalue(0xc000000000000000L, 20), zs->at(3));
 }
 
+// github issue #1
+// decompose crashes when box xhi == space xhi
+static void decomposeFuocorBug()
+{
+    double lo[] = {229.89656200, 20.19199900};
+    double hi[] = {299.11444200, 52.80766900};
+    uint32_t x_bits[] = {10, 10};
+    Space space(2, lo, hi, x_bits);
+    Box2 box(299.09715200, 299.11444200, 39.27287300, 39.29568100);
+    OutputArray<const SpatialObject*> output;
+    SessionMemory<const SpatialObject*> memory;
+    ZArray* zs = memory.zArray();
+    space.decompose(&box, 4, &memory);
+}
+
 static void testDecomposition()
 {
     decomposeEntireSpace();
@@ -403,6 +424,7 @@ static void testDecomposition()
     decomposeBottomHalfSpace();
     decomposeTopHalfSpace();
     decomposeTinyBoxInMiddleOfSpace();
+    decomposeFuocorBug();
 }
 
 //----------------------------------------------------------------------

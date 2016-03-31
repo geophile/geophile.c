@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 2.8)
 
+# Enable the following line to get line numbers from valgrind
+# set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -O0 -ggdb")
+
 add_library(geophile SHARED
   Box2.cpp
   ByteBuffer.cpp

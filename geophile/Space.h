@@ -103,6 +103,7 @@ namespace geophile
         uint32_t _z_bits;
         // Translation to/from application space
         double* _app_lo;
+        double* _app_hi;
         double* _app_width;
         uint64_t* _z_range;
         // For shuffling
